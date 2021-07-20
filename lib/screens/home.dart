@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:elsab/screens/second.dart';
+import 'package:elsab/components/navBar.dart';
 
 class Home extends StatelessWidget {
   goToNext() {
@@ -51,9 +52,9 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainMenu(),
       appBar: AppBar(
-        title: Text("Get Package | Home"),
-        centerTitle: true,
+        title: Text('Home'),
       ),
       body: Center(
         child: Column(
