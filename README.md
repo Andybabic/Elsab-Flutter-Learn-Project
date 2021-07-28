@@ -30,5 +30,7 @@ FTP als Speicher für Fotos und Videos
 
 
 
+Farben sollen nach diesem Schema gewählt werden.
 
+![alt text](http://elsab_colors.png)
 
