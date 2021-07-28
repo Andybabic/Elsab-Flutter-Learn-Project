@@ -2,15 +2,33 @@
 
 Feuerwehr OrganisationsApp
 
-## Getting Started
+## Anforderungen
 
-This project is a starting point for a Flutter application.
+Die App soll den Mitgliedern der Feuerwehr erlauben auf Einsätze sowie Daten im Feuerwehrwesen zugreifen zu können.
 
-A few resources to get you started if this is your first Flutter project:
+Das wichtigste ist eine Liste aller aktuellen sowie vergangenen Einsätze. 
+Dies werden von einer API geladen siehe: https://elsab.at/api/history/results.json
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Jeder Eisatz soll anklickbar werden und eine Detailierte Ansicht des Einsatzes zeigen, wichtig ist dabei die möglichkeit eine Navigation mit der aktuellen Position zu starten. Es soll ebenfalls die möglichkeit geben, bei Einsätzen direkt untergeordnete Daten und Formulare darzustellen. Für den Release reicht ein einfacher upload von Fotos und Videos auf einen FTP Server. Diese Bilder sollen auch nach dem Hochladen in einer jeweiligen Galerie zu verfügung stehen.
+Bei jedem Einsatz soll es auch die möglichkeit geben einen Text/ Kommentar zu schreiben, der bei dem Einsatz unten angehängt wird ( z.B Adresse falsch, Richtige Adresse ist ... )
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Ein weiterer Part ist die Benachrichtigung zu einem Event/ Einsatz, dieser soll ein einfacher Push sein.
+
+Es soll auch möglich sein miteinander zu chatten und einen direkten Partner oder Gruppe schreiben zu können.
+
+Alle Anforderungen sind somit:
+
+Firebase als Datenbank
+- Automatisch Daten von der Json zu Firebase portieren 
+- Nutzer mit Infos
+
+FTP als Speicher für Fotos und Videos
+- schreiben auf FTP ( Zugänge sollen nicht in der App gespeichert sein, deshalb wird eine PHP Schnittstelle genutzt )
+- Lesen von FTP
+
+
+
+
+
+
+
