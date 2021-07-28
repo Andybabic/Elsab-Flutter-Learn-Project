@@ -52,6 +52,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/cover.jpg
+    - assets/images/malek_profile.jpg
+    - assets/images/malek_face/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
