@@ -23,7 +23,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  cloud_firestore: ^2.4.0
+  firebase_auth: ^3.0.1
+  firebase_auth_web: ^3.0.0
+  shared_preferences: ^2.0.6
+  google_sign_in: ^5.0.4
   get: ^4.1.4
 
 
@@ -51,9 +55,7 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - assets/images/cover.jpg
-    - assets/images/malek_profile.jpg
-    - assets/images/malek_face/
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
