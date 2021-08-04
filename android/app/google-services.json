@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "548902347214",
+    "project_id": "elsab-a6583",
+    "storage_bucket": "elsab-a6583.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548902347214:android:58c4356c70311f4d374b9f",
+        "android_client_info": {
+          "package_name": "at.elsab.elsab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "548902347214-h74fjdo0k6b87ekv761rs3fk4soqfasi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwVdyWxiHBWwZTxWs55i50P2ihaZyEU10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "548902347214-h74fjdo0k6b87ekv761rs3fk4soqfasi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "548902347214-gci93d1fpjpfecnedehl0mtg7cna8uul.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "at.elsab.elsabapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
