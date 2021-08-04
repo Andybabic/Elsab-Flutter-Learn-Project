@@ -3,11 +3,18 @@ import 'package:get/get.dart';
 import 'package:elsab/screens/second.dart';
 import 'package:elsab/components/navBar.dart';
 
+import 'malek.dart';
+
 class Home extends StatelessWidget {
   goToNext() {
     //Navigator.push(context, MaterialPageRoute(builder: (context)=>Second()));
     //navigator.push(MaterialPageRoute(builder: (context) => Second()));
     Get.to(Second());
+  }
+
+  // Go to Malek-Screen
+  goToMalek(){
+    Get.to(Malek());
   }
 
   _showSnackBar() {
@@ -84,7 +91,18 @@ class Home extends StatelessWidget {
               onPressed: () {
                 Get.toNamed("/second");
               },
-            )
+            ),
+            Divider(
+              color: Colors.black,
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Text("Addition"),
+            ElevatedButton(
+                onPressed: goToMalek,
+                child: Text("Let's go to Malek's Screen"),
+            ),
           ],
         ),
       ),
