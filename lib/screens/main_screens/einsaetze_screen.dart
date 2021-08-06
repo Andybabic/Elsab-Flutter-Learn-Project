@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/res/custom_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:elsab/screens/main_screens/einsatz_details_screen.dart';
+import 'package:elsab/widgets/einsatz_item.dart';
 
 class EinsatzlisteScreen extends StatefulWidget {
   const EinsatzlisteScreen({Key? key}) : super(key: key);
@@ -11,23 +12,23 @@ class EinsatzlisteScreen extends StatefulWidget {
 }
 
 class _EinsatzlisteScreenState extends State<EinsatzlisteScreen> {
-  Stream<QuerySnapshot> snapshots = FirebaseFirestore.instance.collection("Einsätze").orderBy("einsatzErzeugt", descending: true).snapshots();
+  Stream<QuerySnapshot> snapshots = FirebaseFirestore.instance
+      .collection("Einsätze")
+      .orderBy("einsatzErzeugt", descending: true)
+      .snapshots();
 
-  String calculateTime(DateTime date){
-    DateTime now = DateTime.now();
-    var diff = now.difference(date);
-    String days = diff.inDays.toString() + "Tagen";
-    String hours = (diff.inHours % 24).toString() + "Stunden";
-    String minutes = (diff.inMinutes % 60).toString() + "Minuten";
-
-    return "vor " + days + ", " + hours + ", " + minutes;
+  refreshSnapshots() async {
+    setState(() {
+      snapshots = loadData();
+    });
   }
 
-  refreshSnapshots() async{
-    Stream<QuerySnapshot> snapshots_new = FirebaseFirestore.instance.collection("Einsätze").orderBy("einsatzErzeugt", descending: true).snapshots();
-    setState((){
-      snapshots = snapshots_new;
-    });
+  Stream<QuerySnapshot> loadData(){
+    Stream<QuerySnapshot> snapshots = FirebaseFirestore.instance
+        .collection("Einsätze")
+        .orderBy("einsatzErzeugt", descending: true)
+        .snapshots();
+    return snapshots;
   }
 
   @override
@@ -51,21 +52,22 @@ class _EinsatzlisteScreenState extends State<EinsatzlisteScreen> {
           ),
           child: StreamBuilder<QuerySnapshot>(
             stream: snapshots,
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-              if(!snapshot.hasData)
-                return Center(
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else {
+                  return Center(
                     child: Text("Keine Einsätze vorhanden"),
-                );
-              if (snapshot.hasError) {
-                return Text('Ups! Etwas ist schief gelaufen');
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              }
-              else
+                  );
+                }
+              } else
                 return ListView(
-                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                    Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                  children:
+                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                    Map<String, dynamic> data =
+                        document.data()! as Map<String, dynamic>;
                     return Container(
                       height: 90,
                       child: Card(
@@ -75,17 +77,7 @@ class _EinsatzlisteScreenState extends State<EinsatzlisteScreen> {
                         ),
                         color: Colors.white30,
                         child: Center(
-                          child: ListTile(
-                            leading: Icon(Icons.access_alarm),
-                            title: Text((data['objekt'] != null && data['objekt'] != "") ? data['objekt'].toString() : "Kein Ort eingetragen"),
-                            subtitle: Text(data['einsatzErzeugt'] != null ? calculateTime(data['einsatzErzeugt'].toDate()) : "Kein Datum bekannt"),
-                            trailing: Text(data['alarmstufe'].toString()),
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => EinsatzDetailScreen(),
-                              ),
-                            ),
-                          ),
+                          child: EinsatzItem(data: data)
                         ),
                       ),
                     );
@@ -98,72 +90,3 @@ class _EinsatzlisteScreenState extends State<EinsatzlisteScreen> {
     );
   }
 }
-
-
-/*
-class EinsatzlisteScreen extends StatelessWidget {
-  //final DatabaseEinsatz db = new DatabaseEinsatz();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Palette.firebaseNavy,
-      appBar: AppBar(
-        backgroundColor: Palette.firebaseOrange,
-        title: Text("Einsatzliste"),
-      ),
-      body: Container(
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16.0,
-          bottom: 100.0,
-          top:100.0,
-        ),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("Einsätze").snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-            if(!snapshot.hasData)
-              return Center(
-                  child: Column(
-                    children: [
-                      Text("Keine Einsätze vorhanden"),
-                      CircularProgressIndicator(),
-                    ],
-                  )
-              );
-            else
-              return ListView.builder(
-                padding: EdgeInsets.all(8.0),
-                itemCount: snapshot.data!.docs.length,
-                reverse: true,
-                itemBuilder: (context, index){
-                  DocumentSnapshot ds = snapshot.data!.docs[index];
-                  return Container(
-                    child: Card(
-                      margin: EdgeInsets.only(
-                        top: 5,
-                        bottom: 5,
-                      ),
-                      child: ListTile(
-                        leading: Icon(Icons.access_alarm),
-                        title: new Text(ds["bemerkung"]),
-                        //subtitle: Text(DateTime.now().difference(ds['einsatzErzeugt'].toDate()).toString()),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => EinsatzDetailScreen(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-
- */
