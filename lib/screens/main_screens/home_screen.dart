@@ -5,6 +5,7 @@ import 'package:elsab/screens/authentication/google_sign_in/g_sign_in_screen.dar
 import 'package:elsab/screens/database/crud/db_login_screen.dart';
 import 'package:elsab/widgets/app_bar_title.dart';
 import 'package:elsab/widgets/footer.dart';
+import 'package:elsab/screens/main_screens/einsaetze_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   final List<String> _listFireItems = [
     'Authentication',
     'Database',
-    'Backend Actions',
+    'Einsatzliste',
     'Machine Learning',
     'Other utilities',
   ];
@@ -28,7 +29,7 @@ class HomeScreen extends StatelessWidget {
   final List<Widget?> _listFeatureScreens = [
     GSignInScreen(),
     DbLoginScreen(),
-    null,
+    EinsatzlisteScreen(),
     null,
     null,
   ];
