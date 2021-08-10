@@ -1,7 +1,6 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
-
 import 'screens/main_screens/home_screen.dart';
-// Import the firebase_core plugin
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
