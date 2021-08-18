@@ -2,11 +2,17 @@ import 'package:get/state_manager.dart';
 import 'package:elsab/components/class_einsatz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class EinsatzController extends GetxController {
   //RxList<Product> products = [].obs as RxList<Product>;
   var einsatzlist = RxList<Einsaetze>();
   final String title = 'Home';
+  final String positionstack_url = "http://api.positionstack.com/v1/forward?access_key=5790cd8f99adf5adf9c5bbfdcdefcb6a&query=";
+  double lat = 46.52694;
+  double long = 48.81667;
 
   @override
   void onInit() {
@@ -15,33 +21,8 @@ class EinsatzController extends GetxController {
   }
 
   void fetchEinsaetze() async {
-    var data = [
-      Einsaetze(
-        abschnitt: "abschnitt",
-        accuracy: "accuracy",
-        alarmiert: 0,
-        alarmstufe: "alarmstufe",
-        bemerkung: "bemerkung",
-        dispositionen: "dispositionen",
-        einsatzErzeugt: "einsatzErzeugt",
-        einsatzID: 0,
-        einsatznummer: 0,
-        lat: 0,
-        long: 0,
-        meldebild: "meldebild",
-        melder: "melder",
-        meldertelefon: "meldertelefon",
-        num1: "num1",
-        num2: "num2",
-        num3: "num3",
-        objekt: "objekt",
-        objektID: 0,
-        ort: "ort",
-        plz: 0,
-        status: 0,
-        strasse: "strasse",
-      )
-    ];
+    List<Einsaetze> data = [];
+
     FirebaseFirestore.instance
         .collection("Einsätze")
         .orderBy("einsatzErzeugt", descending: true)
@@ -56,11 +37,11 @@ class EinsatzController extends GetxController {
           alarmstufe: doc["alarmstufe"].toString(),
           bemerkung: doc["bemerkung"],
           dispositionen: doc["dispositionen"],
-          einsatzErzeugt: doc["meldebild"],
+          einsatzErzeugt: DateFormat('yyyy-MM-dd hh:mm').format(doc["einsatzErzeugt"].toDate()),
           einsatzID: doc["einsatzID"],
           einsatznummer: doc["einsatznummer"],
-          lat: 0,
-          long: 0,
+          lat: lat,
+          long: long,
           meldebild: doc["meldebild"],
           melder: doc["melder"],
           meldertelefon: doc["meldertelefon"],
