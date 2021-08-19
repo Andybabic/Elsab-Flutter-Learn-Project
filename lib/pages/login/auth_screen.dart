@@ -7,6 +7,7 @@ class AuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -15,17 +16,17 @@ class AuthScreen extends StatelessWidget {
             child: Icon(
               Icons.phone_iphone,
               size: 150,
-              color: Colors.amberAccent,
+              color: Colors.blueGrey,
             ),
           ),
           Padding(
             padding:
                 const EdgeInsets.only(left: 16, top: 32, right: 16, bottom: 8),
             child: Text(
-              'Say Hello To Your New App!',
+              'Melde dich an!',
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.amberAccent,
+                  color: Colors.blueGrey,
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold),
             ),
@@ -33,7 +34,7 @@ class AuthScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
             child: Text(
-              'You\'ve just saved a week of development and headaches.',
+              'Dadurch kannst du weitere Inhalte deiner Feuerwehr freischalten',
               style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
@@ -44,13 +45,13 @@ class AuthScreen extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: double.infinity),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.amberAccent,
+                  primary: Colors.blueGrey,
                   textStyle: TextStyle(color: Colors.white),
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                     side: BorderSide(
-                      color: Colors.amberAccent,
+                      color: Colors.blueGrey,
                     ),
                   ),
                 ),
@@ -79,7 +80,7 @@ class AuthScreen extends StatelessWidget {
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0),
                       side: BorderSide(
-                        color: Colors.amberAccent,
+                        color: Colors.blueGrey,
                       ),
                     ),
                   ),
@@ -89,7 +90,7 @@ class AuthScreen extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.amberAccent),
+                      color: Colors.blueGrey),
                 ),
                 onPressed: () => push(
                   context,
