@@ -30,7 +30,16 @@ dependencies:
   latlong2: 0.8.0
   http: 0.13.3
   map_launcher: ^2.1.1
-
+  firebase_auth: ^3.0.2
+  flutter_facebook_auth: ^3.4.1
+  http: ^0.13.3
+  image_picker: ^0.8.0+3
+  firebase_storage: ^8.1.1
+  cached_network_image: ^3.0.0
+  smooth_page_indicator: ^0.3.0-nullsafety.0
+  progress_dialog:
+    git:
+      url: https://github.com/mostafaAbdelazim/progress_dialog.git
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -40,6 +49,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: false
+  ios: true
+  remove_alpha_ios: true
+  image_path: android/app/src/main/ic_launcher-playstore.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -58,6 +73,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

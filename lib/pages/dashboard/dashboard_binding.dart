@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:elsab/pages/account/account_controller.dart';
 import 'package:elsab/pages/home/home_controller.dart';
 import 'dashboard_controller.dart';
-import 'package:elsab/components/order_item.dart';
+
 
 class DashboardBinding extends Bindings {
   @override
