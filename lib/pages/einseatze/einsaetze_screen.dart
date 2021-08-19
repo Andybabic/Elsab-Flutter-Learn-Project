@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:elsab/components/custom_colors.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +7,8 @@ import 'einsatz_details_screen.dart';
 import 'einsatz_item.dart';
 import 'package:elsab/components/menu.dart';
 
-
-
 class EinsatzlisteScreen extends StatelessWidget {
-
   final einsatzController = Get.put(EinsatzController());
-
 
   @override
   Widget build(BuildContext context) {
@@ -28,35 +23,38 @@ class EinsatzlisteScreen extends StatelessWidget {
               Expanded(
                 child: GetX<EinsatzController>(
                   builder: (controller) {
-                    return ListView(
-                      children: List.generate(
-                        controller.einsatzlist.length,
-                            (index) {
-                          return Card(child:
-                            InkWell(
-                              onTap: (  ) {Get.to(EinsatzDetailScreen(controller.einsatzlist[index]));}, // Handle your callback
-                              child: Container(
-                              height: 90,
-                              child: Card(
-                                margin: EdgeInsets.only(
-                                  top: 5,
-                                  bottom: 5,
-                                ),
-                                child: Center(
-                                    child: EinsatzItem(data: controller.einsatzlist[index])
+                    return Container(
+                      margin: EdgeInsets.all(5),
+                      child: ListView(
+                        children: List.generate(
+                          controller.einsatzlist.length,
+                          (index) {
+                            return Card(
+                              child: InkWell(
+                                onTap: () {
+                                  Get.to(EinsatzDetailScreen(
+                                      controller.einsatzlist[index]));
+                                }, // Handle your callback
+                                child: Container(
+                                  height: 90,
+                                  child: Card(
+                                    margin: EdgeInsets.only(
+                                      top: 5,
+                                      //bottom: 5,
+                                    ),
+                                    child: Center(
+                                        child: EinsatzItem(
+                                            data: controller.einsatzlist[index])),
+                                  ),
                                 ),
                               ),
-                            ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     );
                   },
                 ),
-              ),
-              Container(
-                height: 100,
               ),
             ],
           ),
@@ -65,4 +63,3 @@ class EinsatzlisteScreen extends StatelessWidget {
     );
   }
 }
-

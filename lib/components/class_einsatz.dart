@@ -1,23 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/state_manager.dart';
-
 
 
 class Einsaetze {
 
-
-
-
-  final String abschnitt ;
+  final String abschnitt;
   final String accuracy;
   final int alarmiert;
   final String alarmstufe;
   final String bemerkung;
-  final String dispositionen ;
+  final String dispositionen;
   final String einsatzErzeugt;
   final int einsatzID;
   final int einsatznummer;
-  final int lat;
-  final int long;
+  final double lat;
+  final double long;
   final String meldebild;
   final String melder;
   final String meldertelefon;
@@ -31,7 +28,6 @@ class Einsaetze {
   final int status;
   final String strasse;
 
-
   Einsaetze({
     this.abschnitt = '',
     this.accuracy= '',
@@ -42,8 +38,8 @@ class Einsaetze {
     this.einsatzErzeugt= '',
     this.einsatzID= 0,
     this.einsatznummer= 0,
-    this.lat= 0,
-    this.long= 0,
+    this.lat= 0.0,
+    this.long= 0.0,
     this.meldebild= '',
     this.melder= '',
     this.meldertelefon= '',
@@ -66,10 +62,15 @@ class Einsaetze {
 
   void updateData (){
 
-
   }
 
+  String getTimeDiff(DateTime timestamp){
+    DateTime now = DateTime.now();
+    var diff = now.difference(timestamp);
+    String days = diff.inDays.toString() + "Tagen";
+    String hours = (diff.inHours % 24).toString() + "Stunden";
+    String minutes = (diff.inMinutes % 60).toString() + "Minuten";
 
-
-
+    return "vor " + days + ", " + hours + ", " + minutes;
+  }
 }
