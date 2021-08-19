@@ -86,7 +86,7 @@ class AuthScreen extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Sign Up',
+                  'Registrieren',
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
