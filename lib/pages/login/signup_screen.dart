@@ -137,7 +137,7 @@ class _SignUpState extends State<SignUpScreen> {
                       'assets/images/placeholder.jpg',
                       fit: BoxFit.cover,
                     )
-                        : Image.file(File(_image.toString())
+                        : Image.file(File(_image!.path)
                       ,
                       fit: BoxFit.cover,
                     ),
