@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:elsab/components/custom_colors.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'einsatz_controller.dart';
 import 'einsatz_details_screen.dart';

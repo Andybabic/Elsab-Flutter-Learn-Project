@@ -8,6 +8,7 @@ import 'package:elsab/components/class_user.dart';
 import 'auth_controller.dart';
 import 'user_controller.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:elsab/constants/app_constants.dart';
 
 File? _image ;
 
@@ -303,7 +304,10 @@ class _SignUpState extends State<SignUpScreen> {
     );
     await hideProgress();
     if (result != null && result is User) {
-    print("signUp check");
+      print("signUp check");
+      showAlertDialog(context, 'Success', 'You Successfully signed up!');
+      Constants.isSignedIn = true;
+      Constants.user.userID = result.userID.toString();
     } else if (result != null && result is String) {
       showAlertDialog(context, 'Failed', result);
     } else {

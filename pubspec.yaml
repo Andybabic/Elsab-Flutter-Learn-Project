@@ -39,6 +39,11 @@ dependencies:
   progress_dialog:
     git:
       url: https://github.com/mostafaAbdelazim/progress_dialog.git
+  flutter_chat_ui: ^1.2.0
+  flutter_firebase_chat_core: ^1.1.4
+  file_picker: ^4.0.0
+  open_file: ^3.2.1
+  mime: ^1.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
