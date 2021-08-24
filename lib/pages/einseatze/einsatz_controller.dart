@@ -57,4 +57,8 @@ class EinsatzController extends GetxController {
     });
     einsatzlist.value = data;
   }
+
+  int Einsatzcounter(){
+    return einsatzlist.length;
+  }
 }

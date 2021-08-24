@@ -4,15 +4,18 @@ import 'einsatz_controller.dart';
 import 'einsatz_details_screen.dart';
 import 'einsatz_item.dart';
 import 'package:elsab/components/menu.dart';
+import 'dart:async';
 
 class EinsatzlisteScreen extends StatelessWidget {
-  final einsatzController = Get.put(EinsatzController());
+  final EinsatzController einsatz = Get.put(EinsatzController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: menu(context),
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(einsatz.Einsatzcounter().toString()+' Einträge') ,
+      ),
       backgroundColor: Colors.blueGrey,
       body: Center(
         child: SafeArea(
@@ -21,6 +24,8 @@ class EinsatzlisteScreen extends StatelessWidget {
               Expanded(
                 child: GetX<EinsatzController>(
                   builder: (controller) {
+                    Timer(Duration(seconds: 5), () {
+                    });
                     return Container(
                       margin: EdgeInsets.all(5),
                       child: ListView(
@@ -60,4 +65,5 @@ class EinsatzlisteScreen extends StatelessWidget {
       ),
     );
   }
+
 }
