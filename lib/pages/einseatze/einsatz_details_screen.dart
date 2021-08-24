@@ -40,7 +40,7 @@ class EinsatzDetailScreen extends StatelessWidget {
   sendLocationToMaps(var map) {
     return map.showMarker(
       coords: Coords(lat, long),
-      title: "Test",
+      title: data.objekt+data.ort,
     );
   }
 
@@ -78,13 +78,14 @@ class EinsatzDetailScreen extends StatelessWidget {
   // load coordinates for Flutter_map first
   // TO DO: check if http request necessary..
   Future getCoords() async{
+
     lat = data.lat;
     long = data.long;
     locationIsUnknown = false;
 
     if(lat == 0 || long == 0){
       var response = await http.get(
-          Uri.parse("http://api.positionstack.com/v1/forward?access_key=5790cd8f99adf5adf9c5bbfdcdefcb6a&query=" + data.ort + "&output=json&limit=1"));
+          Uri.parse("http://api.positionstack.com/v1/forward?access_key=5790cd8f99adf5adf9c5bbfdcdefcb6a&query=" + data.ort +" "+data.strasse+" "+ data.plz.toString() +" "+data.plz.toString() +"&output=json&limit=1"));
 
       var body = jsonDecode(response.body)["data"];
 

@@ -1,4 +1,4 @@
-import 'package:elsab/pages/chat/chat_overview_page.dart';
+import 'package:elsab/pages/chat/rooms.dart';
 import 'package:elsab/pages/einseatze/einsaetze_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class DashboardPage extends StatelessWidget {
               index: controller.tabIndex,
               children: [
                 HomePage(),
-                ChatOverviewPage(),
+                RoomsPage(),
                 AlertsPage(),
                 AccountPage(),
               ],
