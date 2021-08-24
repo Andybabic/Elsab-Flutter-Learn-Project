@@ -2,8 +2,6 @@ import 'package:get/state_manager.dart';
 import 'package:elsab/components/class_einsatz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class EinsatzController extends GetxController {
@@ -58,7 +56,7 @@ class EinsatzController extends GetxController {
     einsatzlist.value = data;
   }
 
-  int Einsatzcounter(){
+  int einsatzcounter(){
     return einsatzlist.length;
   }
 }

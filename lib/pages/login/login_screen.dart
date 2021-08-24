@@ -1,12 +1,9 @@
 import 'package:elsab/constants/app_constants.dart';
-import 'package:elsab/pages/dashboard/dashboard_page.dart';
-import 'package:elsab/pages/home/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:elsab/components/class_user.dart';
-import 'package:get/get.dart';
 import 'auth_controller.dart';
 import 'user_controller.dart';
 

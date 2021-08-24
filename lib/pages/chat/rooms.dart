@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'chat.dart';
-import 'package:get_storage/get_storage.dart';
 import 'userpage.dart';
 import 'package:elsab/pages/login/login_screen.dart';
 
