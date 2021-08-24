@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/state_manager.dart';
-
+import 'package:http/http.dart';
 
 class Einsaetze {
-
   final String abschnitt;
   final String accuracy;
   final int alarmiert;
@@ -30,41 +29,37 @@ class Einsaetze {
 
   Einsaetze({
     this.abschnitt = '',
-    this.accuracy= '',
-    this.alarmiert= 0,
+    this.accuracy = '',
+    this.alarmiert = 0,
     this.alarmstufe = '',
-    this.bemerkung= '',
+    this.bemerkung = '',
     this.dispositionen = '',
-    this.einsatzErzeugt= '',
-    this.einsatzID= 0,
-    this.einsatznummer= 0,
-    this.lat= 0.0,
-    this.long= 0.0,
-    this.meldebild= '',
-    this.melder= '',
-    this.meldertelefon= '',
-    this.num1= '',
-    this.num2= '',
-    this.num3= '',
-    this.objekt= '',
-    this.objektID= 0,
-    this.ort= '',
-    this.plz= 0,
-    this.status= 0,
-    this.strasse= '',
+    this.einsatzErzeugt = '',
+    this.einsatzID = 0,
+    this.einsatznummer = 0,
+    this.lat = 0.0,
+    this.long = 0.0,
+    this.meldebild = '',
+    this.melder = '',
+    this.meldertelefon = '',
+    this.num1 = '',
+    this.num2 = '',
+    this.num3 = '',
+    this.objekt = '',
+    this.objektID = 0,
+    this.ort = '',
+    this.plz = 0,
+    this.status = 0,
+    this.strasse = '',
   });
 
   final isFavorite = false.obs;
 
-  void addToCount (){
+  void addToCount() {}
 
-  }
+  void updateData() {}
 
-  void updateData (){
-
-  }
-
-  String getTimeDiff(DateTime timestamp){
+  String getTimeDiff(DateTime timestamp) {
     DateTime now = DateTime.now();
     var diff = now.difference(timestamp);
     String days = diff.inDays.toString() + "Tagen";
@@ -73,4 +68,6 @@ class Einsaetze {
 
     return "vor " + days + ", " + hours + ", " + minutes;
   }
+
+
 }

@@ -1,9 +1,10 @@
 //import 'dart:async';
 import 'package:flutter/material.dart';
+
 //import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:elsab/pages/login/auth_screen.dart';
-
+import 'package:elsab/pages/chat/rooms.dart';
 
 Drawer menu(BuildContext context) {
   return Drawer(
@@ -19,8 +20,8 @@ Drawer menu(BuildContext context) {
           accountName: Row(
             children: <Widget>[
               Container(
-                width: 50,
-                height: 50,
+                width: 100,
+                height: 60,
                 decoration: BoxDecoration(shape: BoxShape.circle),
                 child: CircleAvatar(
                   backgroundColor: Colors.redAccent,
@@ -55,12 +56,12 @@ Drawer menu(BuildContext context) {
           },
         ),
         ListTile(
-          title: Text('testing'),
-          onTap: () {},
+          title: Text('Chat'),
+          onTap: () {
+            Get.to(() => RoomsPage());
+          },
         ),
       ],
     ),
   );
 }
-
-

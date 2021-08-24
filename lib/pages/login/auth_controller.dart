@@ -13,7 +13,7 @@ class FireStoreUtils {
 
   static Future<User?> getCurrentUser(String uid) async {
     DocumentSnapshot<Map<String, dynamic>> userDocument =
-    await firestore.collection('users').doc(uid).get();
+        await firestore.collection('users').doc(uid).get();
     if (userDocument.data() != null && userDocument.exists) {
       return User.fromJson(userDocument.data()!);
     } else {
@@ -36,7 +36,7 @@ class FireStoreUtils {
     Reference upload = storage.child("images/$userID.png");
     UploadTask uploadTask = upload.putFile(image);
     var downloadUrl =
-    await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
+        await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
     return downloadUrl.toString();
   }
 
@@ -49,7 +49,7 @@ class FireStoreUtils {
       auth.UserCredential result = await auth.FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-      await firestore.collection('users').doc(result.user?.uid ?? '').get();
+          await firestore.collection('users').doc(result.user?.uid ?? '').get();
       User? user;
       if (documentSnapshot.exists) {
         user = User.fromJson(documentSnapshot.data() ?? {});
@@ -99,18 +99,20 @@ class FireStoreUtils {
       Map<String, dynamic> userData, AccessToken token) async {
     auth.UserCredential authResult = await auth.FirebaseAuth.instance
         .signInWithCredential(
-        auth.FacebookAuthProvider.credential(token.token));
+            auth.FacebookAuthProvider.credential(token.token));
     User? user = await getCurrentUser(authResult.user?.uid ?? '');
     if (user != null) {
       user.profilePictureURL = userData['picture']['data']['url'];
-      user.name = userData['name'];
+      user.firstName = userData['fistName'];
+      user.secondName = userData['secondName'];
       user.email = userData['email'];
       dynamic result = await updateCurrentUser(user);
       return result;
     } else {
       user = User(
           email: userData['email'] ?? '',
-          name: userData['name'] ?? '',
+          firstName: userData['firstName'] ?? '',
+          secondName: userData['secondName'] ?? '',
           profilePictureURL: userData['picture']['data']['url'] ?? '',
           userID: authResult.user?.uid ?? '');
       String? errorMessage = await firebaseCreateNewUser(user);
@@ -132,24 +134,26 @@ class FireStoreUtils {
           .then((value) => null, onError: (e) => e);
 
   static firebaseSignUpWithEmailAndPassword(
-      String emailAddress,
-      String password,
-      File? image,
-      String name,
-      ) async {
+    String emailAddress,
+    String password,
+    File? image,
+    String firstName,
+    String secondName,
+  ) async {
     try {
       auth.UserCredential result = await auth.FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-          email: emailAddress, password: password);
+              email: emailAddress, password: password);
       String profilePicUrl = '';
       if (image != null) {
         await updateProgress('Uploading image, Please wait...');
         profilePicUrl =
-        await uploadUserImageToFireStorage(image, result.user?.uid ?? '');
+            await uploadUserImageToFireStorage(image, result.user?.uid ?? '');
       }
       User user = User(
           email: emailAddress,
-          name: name,
+          firstName: firstName,
+          secondName: secondName,
           userID: result.user?.uid ?? '',
           profilePictureURL: profilePicUrl);
       String? errorMessage = await firebaseCreateNewUser(user);

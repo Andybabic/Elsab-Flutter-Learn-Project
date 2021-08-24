@@ -22,7 +22,7 @@ class _SignUpState extends State<SignUpScreen> {
   TextEditingController _passwordController = new TextEditingController();
   GlobalKey<FormState> _key = new GlobalKey();
   AutovalidateMode _validate = AutovalidateMode.disabled;
-  String? name, email, password, confirmPassword;
+  String? firstName,secondName, email, password, confirmPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -164,13 +164,34 @@ class _SignUpState extends State<SignUpScreen> {
                 const EdgeInsets.only(top: 16.0, right: 8.0, left: 8.0),
                 child: TextFormField(
                     validator: validateName,
-                    onSaved: (val) => name = val,
+                    onSaved: (val) => firstName = val,
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                         contentPadding: new EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         fillColor: Colors.white,
-                        hintText: 'Name',
+                        hintText: 'Vorname',
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                            borderSide: BorderSide(
+                                color: Colors.black45, width: 2.0)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                        ))))),
+        ConstrainedBox(
+            constraints: BoxConstraints(minWidth: double.infinity),
+            child: Padding(
+                padding:
+                const EdgeInsets.only(top: 16.0, right: 8.0, left: 8.0),
+                child: TextFormField(
+                    validator: validateName,
+                    onSaved: (val) => secondName = val,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                        contentPadding: new EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
+                        fillColor: Colors.white,
+                        hintText: 'Nachname',
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25.0),
                             borderSide: BorderSide(
@@ -300,7 +321,8 @@ class _SignUpState extends State<SignUpScreen> {
       email!.trim(),
       password!.trim(),
       _image,
-      name!.trim(),
+      firstName!.trim(),
+      secondName!.trim(),
     );
     await hideProgress();
     if (result != null && result is User) {
