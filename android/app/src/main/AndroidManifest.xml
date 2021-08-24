@@ -2,8 +2,7 @@
     package="at.elsab.elsab">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:name="at.elsab.elsab"
-        android:label="base_project"
+        android:label="elsab"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
