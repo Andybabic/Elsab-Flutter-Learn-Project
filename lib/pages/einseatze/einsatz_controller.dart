@@ -15,6 +15,7 @@ class EinsatzController extends GetxController {
   void onInit() {
     super.onInit();
     fetchEinsaetze();
+
   }
 
   void fetchEinsaetze() async {
