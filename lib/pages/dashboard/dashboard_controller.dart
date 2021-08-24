@@ -10,6 +10,6 @@ class DashboardController extends GetxController {
   void updateSite(){
     tabIndex = tabIndex;
 
-  update();
-}
+    update();
+  }
 }

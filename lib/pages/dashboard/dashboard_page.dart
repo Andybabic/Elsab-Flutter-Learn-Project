@@ -1,3 +1,4 @@
+import 'package:elsab/pages/chat/chat_overview_page.dart';
 import 'package:elsab/pages/einseatze/einsaetze_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class DashboardPage extends StatelessWidget {
               index: controller.tabIndex,
               children: [
                 HomePage(),
-                EinsatzlisteScreen(),
+                ChatOverviewPage(),
                 AlertsPage(),
                 AccountPage(),
               ],
@@ -43,8 +44,8 @@ class DashboardPage extends StatelessWidget {
                 label: 'Home',
               ),
               _bottomNavigationBarItem(
-                icon: Icon(Icons.food_bank).icon,
-                label: 'Bestellungen',
+                icon: Icon(Icons.chat).icon,
+                label: 'Chat',
               ),
               _bottomNavigationBarItem(
                 icon: Icon(Icons.apps).icon,

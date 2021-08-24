@@ -1,6 +1,9 @@
 //import 'dart:async';
 import 'package:flutter/material.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+import 'package:elsab/pages/login/auth_screen.dart';
+
 
 Drawer menu(BuildContext context) {
   return Drawer(
@@ -46,12 +49,9 @@ Drawer menu(BuildContext context) {
           },
         ),
         ListTile(
-          title: Text('Item 1'),
+          title: Text('Login'),
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/details',
-            );
+            Get.to(() => AuthScreen());
           },
         ),
         ListTile(
