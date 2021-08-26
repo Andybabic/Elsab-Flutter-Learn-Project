@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
 
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
-import 'themes/app_theme.dart';
-import 'package:get_storage/get_storage.dart';
+import 'constants/app_constants.dart';
 
 
 
@@ -32,8 +30,8 @@ class MyApp extends StatelessWidget {
       // Debug false/true
       debugShowCheckedModeBanner: false,
       // Theme wird von der Hardware abgerufen
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: ThemeConst.lightTheme,
+      darkTheme: ThemeConst.darkTheme,
       themeMode: ThemeMode.system,
     );
   }

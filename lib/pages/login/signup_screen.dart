@@ -328,8 +328,7 @@ class _SignUpState extends State<SignUpScreen> {
     if (result != null && result is User) {
       print("signUp check");
       showAlertDialog(context, 'Success', 'You Successfully signed up!');
-      Constants.isSignedIn = true;
-      Constants.user.userID = result.userID.toString();
+      UserConst.currentUser = result;
     } else if (result != null && result is String) {
       showAlertDialog(context, 'Failed', result);
     } else {

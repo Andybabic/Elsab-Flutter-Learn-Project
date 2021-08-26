@@ -195,8 +195,7 @@ class _LoginScreen extends State<LoginScreen> {
     if (result != null && result is User) {
       print('Mail-check');
       showAlertDialog(context, 'Login success', "Successfully logged in");
-      Constants.isSignedIn = true;
-      Constants.user = result;
+      UserConst.currentUser = result;
     } else if (result != null && result is String) {
       showAlertDialog(context, 'Couldn\'t Authenticate', result);
     } else {
