@@ -24,7 +24,6 @@ class UsersPage extends StatelessWidget {
   String getUserName(types.User user) =>
       '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
 
-
   Widget _buildAvatar(types.User user) {
     final color = Colors.blue;
     final hasImage = user.imageUrl != null;
