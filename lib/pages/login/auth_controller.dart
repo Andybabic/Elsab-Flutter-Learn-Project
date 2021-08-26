@@ -24,7 +24,7 @@ class FireStoreUtils {
   static Future<User> updateCurrentUser(User user) async {
     return await firestore
         .collection('users')
-        .doc(user.userID)
+        .doc(user.id)
         .set(user.toJson())
         .then((document) {
       return user;
@@ -102,9 +102,9 @@ class FireStoreUtils {
             auth.FacebookAuthProvider.credential(token.token));
     User? user = await getCurrentUser(authResult.user?.uid ?? '');
     if (user != null) {
-      user.profilePictureURL = userData['picture']['data']['url'];
-      user.firstName = userData['fistName'];
-      user.secondName = userData['secondName'];
+      user.imageUrl = userData['picture']['data']['url'];
+      user.firstName = userData['firstName'];
+      user.lastName = userData['lastName'];
       user.email = userData['email'];
       dynamic result = await updateCurrentUser(user);
       return result;
@@ -112,9 +112,9 @@ class FireStoreUtils {
       user = User(
           email: userData['email'] ?? '',
           firstName: userData['firstName'] ?? '',
-          secondName: userData['secondName'] ?? '',
-          profilePictureURL: userData['picture']['data']['url'] ?? '',
-          userID: authResult.user?.uid ?? '');
+          lastName: userData['lastName'] ?? '',
+          imageUrl: userData['picture']['data']['url'] ?? '',
+          id: authResult.user?.uid ?? '');
       String? errorMessage = await firebaseCreateNewUser(user);
       if (errorMessage == null) {
         return user;
@@ -129,7 +129,7 @@ class FireStoreUtils {
   static Future<String?> firebaseCreateNewUser(User user) async =>
       await firestore
           .collection('users')
-          .doc(user.userID)
+          .doc(user.id)
           .set(user.toJson())
           .then((value) => null, onError: (e) => e);
 
@@ -138,7 +138,7 @@ class FireStoreUtils {
     String password,
     File? image,
     String firstName,
-    String secondName,
+    String lastName,
   ) async {
     try {
       auth.UserCredential result = await auth.FirebaseAuth.instance
@@ -153,9 +153,9 @@ class FireStoreUtils {
       User user = User(
           email: emailAddress,
           firstName: firstName,
-          secondName: secondName,
-          userID: result.user?.uid ?? '',
-          profilePictureURL: profilePicUrl);
+          lastName: lastName,
+          id: result.user?.uid ?? '',
+          imageUrl: profilePicUrl);
       String? errorMessage = await firebaseCreateNewUser(user);
       if (errorMessage == null) {
         return user;

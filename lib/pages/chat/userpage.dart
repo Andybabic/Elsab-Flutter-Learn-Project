@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'chat.dart';
-import 'package:elsab/components/class_user.dart' as myUser;
+
+
 
 class UsersPage extends StatelessWidget {
   const UsersPage({Key? key}) : super(key: key);
@@ -24,6 +24,7 @@ class UsersPage extends StatelessWidget {
   String getUserName(types.User user) =>
       '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
 
+
   Widget _buildAvatar(types.User user) {
     final color = Colors.blue;
     final hasImage = user.imageUrl != null;
@@ -31,21 +32,17 @@ class UsersPage extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(right: 16),
-      width: 150,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        CircleAvatar(
-          backgroundColor: color,
-          backgroundImage: hasImage ? NetworkImage(user.imageUrl!) : null,
-          radius: 20,
-          child: !hasImage
-              ? Text(
-                  name.isEmpty ? '' : name[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
-                )
-              : null,
-        ),
-        Text(name.toString()),
-      ]),
+      child: CircleAvatar(
+        backgroundColor: color,
+        backgroundImage: hasImage? NetworkImage(user.imageUrl!) : null,
+        radius: 20,
+        child: !hasImage
+            ? Text(
+          name.isEmpty? user.lastName.toString() : name[0].toUpperCase(),
+          style: const TextStyle(color: Colors.white),
+        )
+            : null,
+      ),
     );
   }
 
@@ -57,7 +54,7 @@ class UsersPage extends StatelessWidget {
         title: const Text('Users'),
       ),
       body: StreamBuilder<List<types.User>>(
-        stream: FirebaseFirestore.instance.collection("users").snapshots(),
+        stream: FirebaseChatCore.instance.users(),
         initialData: const [],
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -73,8 +70,7 @@ class UsersPage extends StatelessWidget {
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              final myUser.User user = myUser.User.fromJson(snapshot.data![index].data());
-
+              final user = snapshot.data![index];
 
               return GestureDetector(
                 onTap: () {
