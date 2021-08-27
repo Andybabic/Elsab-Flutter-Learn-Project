@@ -53,21 +53,22 @@ class Einsaetze {
     this.strasse = '',
   });
 
+  Map<String,dynamic> toMap(){
+    return {
+      'alarmstufe' : alarmstufe,
+      'einsatzErzeugt' : einsatzErzeugt,
+      'meldebild' : meldebild,
+      'objekt' : objekt,
+      'ort' : ort,
+      'plz' : plz,
+      'strasse' : strasse,
+      'status' : status,
+    };
+  }
+
   final isFavorite = false.obs;
 
   void addToCount() {}
 
   void updateData() {}
-
-  String getTimeDiff(DateTime timestamp) {
-    DateTime now = DateTime.now();
-    var diff = now.difference(timestamp);
-    String days = diff.inDays.toString() + "Tagen";
-    String hours = (diff.inHours % 24).toString() + "Stunden";
-    String minutes = (diff.inMinutes % 60).toString() + "Minuten";
-
-    return "vor " + days + ", " + hours + ", " + minutes;
-  }
-
-
 }

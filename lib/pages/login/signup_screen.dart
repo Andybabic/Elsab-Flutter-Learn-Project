@@ -22,7 +22,7 @@ class _SignUpState extends State<SignUpScreen> {
   TextEditingController _passwordController = new TextEditingController();
   GlobalKey<FormState> _key = new GlobalKey();
   AutovalidateMode _validate = AutovalidateMode.disabled;
-  String? firstName,secondName, email, password, confirmPassword;
+  String? firstName,lastName, email, password, confirmPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +185,7 @@ class _SignUpState extends State<SignUpScreen> {
                 const EdgeInsets.only(top: 16.0, right: 8.0, left: 8.0),
                 child: TextFormField(
                     validator: validateName,
-                    onSaved: (val) => secondName = val,
+                    onSaved: (val) => lastName = val,
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                         contentPadding: new EdgeInsets.symmetric(
@@ -322,14 +322,13 @@ class _SignUpState extends State<SignUpScreen> {
       password!.trim(),
       _image,
       firstName!.trim(),
-      secondName!.trim(),
+      lastName!.trim(),
     );
     await hideProgress();
     if (result != null && result is User) {
       print("signUp check");
       showAlertDialog(context, 'Success', 'You Successfully signed up!');
-      Constants.isSignedIn = true;
-      Constants.user.userID = result.userID.toString();
+      UserConst.currentUser = result;
     } else if (result != null && result is String) {
       showAlertDialog(context, 'Failed', result);
     } else {

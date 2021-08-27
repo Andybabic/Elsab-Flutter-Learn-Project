@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:elsab/components/class_einsatz.dart';
+import 'package:elsab/constants/app_constants.dart';
 
 
 class EinsatzItem extends StatelessWidget {
@@ -32,7 +33,7 @@ class EinsatzItem extends StatelessWidget {
               : "Kein Ort eingetragen"),
       subtitle: Text(data.einsatzErzeugt.isEmpty
           ? "Kein Datum bekannt"
-          : data.getTimeDiff( DateTime.parse( data.einsatzErzeugt ))),
+          : UtilsConst.getTimeDiff(DateTime.parse( data.einsatzErzeugt ))),
       trailing: Text(data.alarmstufe.toString()),
     );
   }

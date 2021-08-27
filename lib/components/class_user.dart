@@ -1,38 +1,48 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class User {
   String email;
   String firstName;
-  String secondName;
-  String userID;
-  String profilePictureURL;
+  String lastName;
+  String lastSeen;
+  String id;
+  String imageUrl;
   String appIdentifier;
+  Map<String, dynamic>? metadata;
 
   User(
       {this.email = '',
       this.firstName = '',
-      this.secondName = '',
-      this.userID = '',
-      this.profilePictureURL = ''})
+      this.lastName = '',
+        this.lastSeen = '',
+      this.id = '',
+      this.imageUrl = '',
+      this.metadata = const{'status':0},
+      })
       : this.appIdentifier = 'Flutter Login Screen ${Platform.operatingSystem}';
 
   factory User.fromJson(Map<String, dynamic> parsedJson) {
     return new User(
         email: parsedJson['email'] ?? '',
-        firstName: parsedJson['fistName'] ?? '',
-        secondName: parsedJson['secondName'] ?? '',
-        userID: parsedJson['id'] ?? parsedJson['userID'] ?? '',
-        profilePictureURL: parsedJson['profilePictureURL'] ?? '');
+        firstName: parsedJson['firstName'] ?? '',
+        lastName: parsedJson['lastName'] ?? '',
+        id: parsedJson['id'] ?? parsedJson['userID'] ?? '',
+        imageUrl: parsedJson['imageUrl'] ?? '',
+        metadata: parsedJson['metadata'] ?? const{'status':0},
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'email': this.email,
-      'fistName': this.firstName,
-      'secondName': this.secondName,
-      'id': this.userID,
-      'profilePictureURL': this.profilePictureURL,
-      'appIdentifier': this.appIdentifier
+      'firstName': this.firstName,
+      'lastName': this.lastName,
+      'id': this.id,
+      'imageUrl': this.imageUrl,
+      'appIdentifier': this.appIdentifier,
+      'metadata' : this.metadata,
     };
   }
 }

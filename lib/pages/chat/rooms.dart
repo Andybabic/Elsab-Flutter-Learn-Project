@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elsab/components/class_user.dart' as myUserClass;
+import 'package:elsab/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,7 +9,6 @@ import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'chat.dart';
 import 'userpage.dart';
 import 'package:elsab/pages/login/login_screen.dart';
-
 
 class RoomsPage extends StatefulWidget {
   const RoomsPage({Key? key}) : super(key: key);
@@ -25,7 +27,6 @@ class _RoomsPageState extends State<RoomsPage> {
     initializeFlutterFire();
     super.initState();
   }
-
 
   void initializeFlutterFire() async {
     try {
@@ -49,36 +50,66 @@ class _RoomsPageState extends State<RoomsPage> {
     await FirebaseAuth.instance.signOut();
   }
 
-  Widget _buildAvatar(types.Room room) {
-    var color = Colors.white;
+  // String getUserName(types.User user) =>
+  //     '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUser(
+      types.Room room) async {
+    var otherUser;
 
     if (room.type == types.RoomType.direct) {
       try {
-        final otherUser = room.users.firstWhere(
-              (u) => u.id != _user!.uid,
+        otherUser = room.users.firstWhere(
+          (u) => u.id != _user!.uid,
         );
-
-        color = Colors.blue;
       } catch (e) {
+        otherUser = null;
         // Do nothing if other user is not found
       }
     }
 
-    final hasImage = room.imageUrl != null;
+    DocumentSnapshot<Map<String, dynamic>> response = await FirebaseFirestore
+        .instance
+        .collection("users")
+        .doc(otherUser.id)
+        .get();
+
+    return response;
+  }
+
+  Widget _buildRoomAvatar(types.Room room, myUserClass.User roomUser) {
+    final hasImage = (room.imageUrl != null && room.imageUrl != '');
     final name = room.name ?? '';
+    var color = Colors.blue;
 
     return Container(
-      margin: const EdgeInsets.only(right: 16),
-      child: CircleAvatar(
-        backgroundColor: color,
-        backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
-        radius: 20,
-        child: !hasImage
-            ? Text(
-          name.isEmpty ? '' : name[0].toUpperCase(),
-          style: const TextStyle(color: Colors.white),
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+      margin: EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+          color: Colors.white,
+          spreadRadius: 1,
+          blurRadius: 1,
+          offset: Offset(0, 3), // changes position of shadow
         )
-            : null,
+      ], borderRadius: BorderRadius.horizontal(right: Radius.circular(10))),
+      child: ListTile(
+        visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+        leading: CircleAvatar(
+          backgroundColor: color,
+          backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
+          radius: 20,
+          child: !hasImage
+              ? Text(
+                  name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
+                  style: const TextStyle(color: Colors.white),
+                )
+              : null,
+        ),
+        title: name.isEmpty
+            ? Text("${roomUser.firstName} ${roomUser.lastName}".trim())
+            : Text(name),
+        subtitle: Text('${room.lastMessages ?? 'keine Nachrichten'}'),
       ),
     );
   }
@@ -101,13 +132,13 @@ class _RoomsPageState extends State<RoomsPage> {
             onPressed: _user == null
                 ? null
                 : () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  fullscreenDialog: true,
-                  builder: (context) => const UsersPage(),
-                ),
-              );
-            },
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        fullscreenDialog: true,
+                        builder: (context) => const UsersPage(),
+                      ),
+                    );
+                  },
           ),
         ],
         brightness: Brightness.dark,
@@ -115,79 +146,90 @@ class _RoomsPageState extends State<RoomsPage> {
           icon: const Icon(Icons.logout),
           onPressed: _user == null ? null : logout,
         ),
-        title: const Text('Rooms'),
+        title: const Text('Räume'),
       ),
       body: _user == null
           ? Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.only(
-          bottom: 200,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Not authenticated'),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    fullscreenDialog: true,
-                    builder: (context) => LoginScreen(),
-                  ),
-                );
-              },
-              child: const Text('Login'),
-            ),
-          ],
-        ),
-      )
-          : StreamBuilder<List<types.Room>>(
-        stream: FirebaseChatCore.instance.rooms(),
-        initialData: const [],
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.only(
                 bottom: 200,
               ),
-              child: const Text('No rooms'),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final room = snapshot.data![index];
-
-              return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ChatPage(
-                        room: room,
-                      ),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Not authenticated'),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (context) => LoginScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('Login'),
                   ),
-                  child: Row(
-                    children: [
-                      _buildAvatar(room),
-                      Text(room.name ?? ''),
-                    ],
-                  ),
+                ],
+              ),
+            )
+          : Container(
+              color: Colors.blueGrey,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
                 ),
-              );
-            },
-          );
-        },
-      ),
+                child: StreamBuilder<List<types.Room>>(
+                  stream: FirebaseChatCore.instance.rooms(),
+                  initialData: const [],
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.only(
+                          bottom: 200,
+                        ),
+                        child: const Text('No rooms'),
+                      );
+                    }
+
+                    return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final room = snapshot.data![index];
+
+                              return FutureBuilder(
+                                  future: getUser(room),
+                                  builder: (context, AsyncSnapshot snapshot) {
+                                    myUserClass.User roomUser =
+                                        myUserClass.User();
+                                    //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
+                                    if (snapshot.hasData &&
+                                        snapshot.data.data() != null)
+                                      roomUser = myUserClass.User.fromJson(
+                                          snapshot.data.data());
+                                    else
+                                      return Text("");
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => ChatPage(
+                                              room: room,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildRoomAvatar(room, roomUser),
+                                    );
+                                  });
+                            },
+                          );
+                  },
+                ),
+              ),
+            ),
     );
   }
 }
-
