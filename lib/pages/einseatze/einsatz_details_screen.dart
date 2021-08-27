@@ -1,12 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elsab/pages/chat/chat.dart';
+import 'package:elsab/pages/chat/rooms.dart';
+import 'package:elsab/pages/login/auth_screen.dart';
+import 'package:elsab/pages/login/user_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:elsab/components/class_einsatz.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:elsab/widgets/flutter_map.dart';
-import 'dart:convert';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'dart:async';
+import 'dart:convert';
 
 class EinsatzDetailScreen extends StatelessWidget {
   final Einsaetze data;
@@ -42,7 +49,7 @@ class EinsatzDetailScreen extends StatelessWidget {
   sendLocationToMaps(var map) {
     return map.showMarker(
       coords: Coords(lat, long),
-      title: data.objekt+data.ort,
+      title: data.objekt + data.ort,
     );
   }
 
@@ -79,30 +86,68 @@ class EinsatzDetailScreen extends StatelessWidget {
 
   // load coordinates for Flutter_map first
   // TO DO: check if http request necessary..
-  Future getCoords() async{
-
+  Future getCoords() async {
     lat = data.lat;
     long = data.long;
     locationIsUnknown = false;
 
-    if(lat == 0 || long == 0){
-      var response = await http.get(
-          Uri.parse("http://api.positionstack.com/v1/forward?access_key=5790cd8f99adf5adf9c5bbfdcdefcb6a&query=" + data.ort +" "+data.strasse+" "+ data.plz.toString() +" "+data.plz.toString() +"&output=json&limit=1"));
+    if (lat == 0 || long == 0) {
+      var response = await http.get(Uri.parse(
+          "http://api.positionstack.com/v1/forward?access_key=5790cd8f99adf5adf9c5bbfdcdefcb6a&query=" +
+              data.ort +
+              " " +
+              data.strasse +
+              " " +
+              data.plz.toString() +
+              " " +
+              data.plz.toString() +
+              "&output=json&limit=1"));
 
       var body = jsonDecode(response.body)["data"];
 
-      try{
+      try {
         lat = body[0]["latitude"];
         long = body[0]["longitude"];
-      } on Exception catch(_){
+      } on Exception catch (_) {
         locationIsUnknown = true;
       }
     }
-    return [lat,long,locationIsUnknown];
+    return [lat, long, locationIsUnknown];
   }
 
-  Future<void> setEinsatzRoom() async{
-    //await FirebaseChatCore.instance.createGroupRoom(metadata: data.toMap(),name: data.objekt.isEmpty? data.ort : data.objekt, users: []);
+  void setEinsatzRoom(context) async {
+    bool alreadyJoined = false;
+
+    final roomDocument = await FirebaseFirestore.instance
+        .collection("rooms")
+        .where('metadata.einsatzID', isEqualTo: data.einsatzID)
+        .get();
+
+    if(roomDocument.docs.isNotEmpty)
+      await roomDocument.docs.first["userIds"].forEach((element) => {
+        if(element.toString() == FirebaseAuth.instance.currentUser?.uid){
+          alreadyJoined = true
+        }
+      });
+
+    if (roomDocument.docs.isEmpty) {
+      FirebaseChatCore.instance.createGroupRoom(
+          metadata: data.toMap(),
+          name: data.objekt.isEmpty ? data.ort : data.objekt,
+
+          users: [],
+      );
+    } else if(!alreadyJoined){
+      await FirebaseFirestore.instance.collection("rooms").doc(roomDocument.docs.first.id).update({"userIds" : FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])});
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (context) => RoomsPage(),
+        ),
+      );
+    } else {
+      showAlertDialog(context, "Raum öffnen/beitreten", "Du bist bereits diesem Raum beigetreten!");
+    }
   }
 
   @override
@@ -114,7 +159,18 @@ class EinsatzDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.open_in_new),
             tooltip: 'Show Snackbar',
-            onPressed: () { setEinsatzRoom(); },
+            onPressed: () {
+              if(FirebaseAuth.instance.currentUser != null)
+                setEinsatzRoom(context);
+              else {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    fullscreenDialog: true,
+                    builder: (context) => AuthScreen(),
+                  ),
+                );
+              }
+            },
           ),
           IconButton(
             icon: const Icon(Icons.navigate_next),
@@ -176,21 +232,16 @@ class EinsatzDetailScreen extends StatelessWidget {
                             width: double.infinity,
                             child: FutureBuilder(
                                 future: getCoords(),
-                                builder: (context, AsyncSnapshot snapshot){
-                                  if(snapshot.hasData){
+                                builder: (context, AsyncSnapshot snapshot) {
+                                  if (snapshot.hasData) {
                                     return FlutterMapWidget(
                                         context: context,
                                         lat: snapshot.data[0],
                                         long: snapshot.data[1],
-                                        locationIsUnknown: snapshot.data[2]
-                                    );
-                                  }
-                                  else
+                                        locationIsUnknown: snapshot.data[2]);
+                                  } else
                                     return CircularProgressIndicator();
-                                }
-                            )
-                        )
-                    ),
+                                }))),
                     Container(
                       height: 50,
                       child: ElevatedButton(

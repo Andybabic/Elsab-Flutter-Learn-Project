@@ -1,10 +1,16 @@
-import 'package:elsab/components/class_user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elsab/components/class_user.dart' as myUserClass;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserConst{
-  static var currentUser = auth.FirebaseAuth.instance.currentUser?? User();
+  static var currentUser = FirebaseAuth.instance.currentUser?? myUserClass.User();
+
+  static logout() async {
+    await FirebaseAuth.instance.signOut();
+  }
 }
 
 class UtilsConst{
@@ -18,6 +24,25 @@ class UtilsConst{
     String minutes = (diff.inMinutes % 60).toString() + "Minuten";
 
     return "vor " + days + ", " + hours + ", " + minutes;
+  }
+
+  static void joinRoom(){
+
+  }
+
+  static void deleteRoom(types.Room room) async{
+    final roomDocument = await FirebaseFirestore.instance
+        .collection("rooms")
+        .doc(room.id)
+        .get();
+
+    if(FirebaseAuth.instance.currentUser?.uid == roomDocument["role"]){
+      FirebaseFirestore.instance.collection("rooms").doc(room.id).delete();
+    }
+  }
+
+  static void leaveRoom(){
+
   }
 }
 
