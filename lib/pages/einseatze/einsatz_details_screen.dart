@@ -5,6 +5,8 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:elsab/widgets/flutter_map.dart';
 import 'dart:convert';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 
 class EinsatzDetailScreen extends StatelessWidget {
   final Einsaetze data;
@@ -99,6 +101,10 @@ class EinsatzDetailScreen extends StatelessWidget {
     return [lat,long,locationIsUnknown];
   }
 
+  Future<void> setEinsatzRoom() async{
+    //await FirebaseChatCore.instance.createGroupRoom(metadata: data.toMap(),name: data.objekt.isEmpty? data.ort : data.objekt, users: []);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,12 +112,9 @@ class EinsatzDetailScreen extends StatelessWidget {
         title: Text(data.meldebild.toString()),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add_alert),
+            icon: const Icon(Icons.open_in_new),
             tooltip: 'Show Snackbar',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
-            },
+            onPressed: () { setEinsatzRoom(); },
           ),
           IconButton(
             icon: const Icon(Icons.navigate_next),

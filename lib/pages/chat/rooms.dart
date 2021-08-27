@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart' as myUserClass;
+import 'package:elsab/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -75,21 +74,28 @@ class _RoomsPageState extends State<RoomsPage> {
         .doc(otherUser.id)
         .get();
 
-    print(otherUser.toString());
-
     return response;
   }
 
-  Widget _buildAvatar(types.Room room, myUserClass.User roomUser) {
-    final hasImage = room.imageUrl != null;
+  Widget _buildRoomAvatar(types.Room room, myUserClass.User roomUser) {
+    final hasImage = (room.imageUrl != null && room.imageUrl != '');
     final name = room.name ?? '';
     var color = Colors.blue;
 
     return Container(
-      margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.all(9),
-      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        CircleAvatar(
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+      margin: EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+          color: Colors.white,
+          spreadRadius: 1,
+          blurRadius: 1,
+          offset: Offset(0, 3), // changes position of shadow
+        )
+      ], borderRadius: BorderRadius.horizontal(right: Radius.circular(10))),
+      child: ListTile(
+        visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+        leading: CircleAvatar(
           backgroundColor: color,
           backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
           radius: 20,
@@ -100,10 +106,11 @@ class _RoomsPageState extends State<RoomsPage> {
                 )
               : null,
         ),
-        name.isEmpty
+        title: name.isEmpty
             ? Text("${roomUser.firstName} ${roomUser.lastName}".trim())
             : Text(name),
-      ]),
+        subtitle: Text('${room.lastMessages ?? 'keine Nachrichten'}'),
+      ),
     );
   }
 
@@ -139,7 +146,7 @@ class _RoomsPageState extends State<RoomsPage> {
           icon: const Icon(Icons.logout),
           onPressed: _user == null ? null : logout,
         ),
-        title: const Text('Rooms'),
+        title: const Text('Räume'),
       ),
       body: _user == null
           ? Container(
@@ -165,58 +172,63 @@ class _RoomsPageState extends State<RoomsPage> {
                 ],
               ),
             )
-          : StreamBuilder<List<types.Room>>(
-              stream: FirebaseChatCore.instance.rooms(),
-              initialData: const [],
-              builder: (context, snapshot) {
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(
-                      bottom: 200,
-                    ),
-                    child: const Text('No rooms'),
-                  );
-                }
+          : Container(
+              color: Colors.blueGrey,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: StreamBuilder<List<types.Room>>(
+                  stream: FirebaseChatCore.instance.rooms(),
+                  initialData: const [],
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.only(
+                          bottom: 200,
+                        ),
+                        child: const Text('No rooms'),
+                      );
+                    }
 
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final room = snapshot.data![index];
+                    return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final room = snapshot.data![index];
 
-                    return FutureBuilder(
-                        future: getUser(room),
-                        builder: (context, AsyncSnapshot snapshot) {
-                          myUserClass.User roomUser = myUserClass.User();
-                          //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
-                          if (snapshot.hasData && snapshot.data.data() != null)
-                            roomUser =
-                                myUserClass.User.fromJson(snapshot.data.data());
-                          else
-                            return Text("");
+                              return FutureBuilder(
+                                  future: getUser(room),
+                                  builder: (context, AsyncSnapshot snapshot) {
+                                    myUserClass.User roomUser =
+                                        myUserClass.User();
+                                    //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
+                                    if (snapshot.hasData &&
+                                        snapshot.data.data() != null)
+                                      roomUser = myUserClass.User.fromJson(
+                                          snapshot.data.data());
+                                    else
+                                      return Text("");
 
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ChatPage(
-                                    room: room,
-                                  ),
-                                ),
-                              );
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => ChatPage(
+                                              room: room,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildRoomAvatar(room, roomUser),
+                                    );
+                                  });
                             },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              child: _buildAvatar(room, roomUser),
-                            ),
                           );
-                        });
                   },
-                );
-              },
+                ),
+              ),
             ),
     );
   }

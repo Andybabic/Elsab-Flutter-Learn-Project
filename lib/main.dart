@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'constants/app_constants.dart';
+import 'components/AppStatus.dart';
 
 
 
@@ -12,13 +13,13 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Get.put(AppStatusManager());
   //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //await GetStorage.init();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
 
   @override
   Widget build(BuildContext context) {
