@@ -77,40 +77,61 @@ class _RoomsPageState extends State<RoomsPage> {
     return response;
   }
 
-  Widget _buildRoomAvatar(types.Room room, myUserClass.User roomUser) {
+  IconData getEinsatzIcon(String alarm) {
+    switch (alarm[0]) {
+      case "T":
+        return Icons.electrical_services;
+      // or Icons.build_circle_outlined;
+      case "B":
+        return Icons.local_fire_department_rounded;
+      default:
+        return Icons.priority_high;
+    }
+  }
+
+  Widget _buildEinsatzRoomItem(types.Room room) {
     final hasImage = (room.imageUrl != null && room.imageUrl != '');
-    final name = room.name ?? '';
+    final name = room.name ??
+        room.metadata?['strasse'] ??
+        room.metadata?['objekt'] ??
+        'Keine Daten vorhanden';
+    final color = Colors.blue;
+
+    return ListTile(
+      visualDensity: VisualDensity(horizontal: 0, vertical: -2),
+      leading: CircleAvatar(
+        backgroundColor: color,
+        backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
+        radius: 20,
+        child: !hasImage ? Text(name[0].toString().toUpperCase()) : null,
+      ),
+      title: Text(name),
+      subtitle:
+          Text("${room.metadata?['meldebild']} ${room.metadata?['meldebild']}"),
+      trailing: Icon(getEinsatzIcon(room.metadata?["alarmstufe"] ?? null)),
+    );
+  }
+
+  Widget _buildUserRoomItem(types.Room room, myUserClass.User roomUser) {
+    final hasImage = (room.imageUrl != null && room.imageUrl != '');
+    final name = room.name ?? (roomUser.firstName + roomUser.lastName).trim();
     var color = Colors.blue;
 
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-      margin: EdgeInsets.only(top: 10),
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-          color: Colors.white,
-          spreadRadius: 1,
-          blurRadius: 1,
-          offset: Offset(0, 3), // changes position of shadow
-        )
-      ], borderRadius: BorderRadius.horizontal(right: Radius.circular(10))),
-      child: ListTile(
-        visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-        leading: CircleAvatar(
-          backgroundColor: color,
-          backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
-          radius: 20,
-          child: !hasImage
-              ? Text(
-                  name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
-                )
-              : null,
-        ),
-        title: name.isEmpty
-            ? Text("${roomUser.firstName} ${roomUser.lastName}".trim())
-            : Text(name),
-        subtitle: Text('${room.lastMessages ?? 'keine Nachrichten'}'),
+    return ListTile(
+      visualDensity: VisualDensity(horizontal: 0, vertical: -2),
+      leading: CircleAvatar(
+        backgroundColor: color,
+        backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
+        radius: 20,
+        child: !hasImage
+            ? Text(
+                name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
+                style: const TextStyle(color: Colors.white),
+              )
+            : null,
       ),
+      title: Text(name),
+      subtitle: Text('Zuletzt online: ${roomUser.lastSeen}'),
     );
   }
 
@@ -144,7 +165,7 @@ class _RoomsPageState extends State<RoomsPage> {
         brightness: Brightness.dark,
         leading: IconButton(
           icon: const Icon(Icons.logout),
-          onPressed: _user == null ? null : logout,
+          onPressed: _user == null ? null : UserConst.logout,
         ),
         title: const Text('Räume'),
       ),
@@ -194,38 +215,55 @@ class _RoomsPageState extends State<RoomsPage> {
                     }
 
                     return ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final room = snapshot.data![index];
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final room = snapshot.data![index];
 
-                              return FutureBuilder(
-                                  future: getUser(room),
-                                  builder: (context, AsyncSnapshot snapshot) {
-                                    myUserClass.User roomUser =
-                                        myUserClass.User();
-                                    //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
-                                    if (snapshot.hasData &&
-                                        snapshot.data.data() != null)
-                                      roomUser = myUserClass.User.fromJson(
-                                          snapshot.data.data());
-                                    else
-                                      return Text("");
+                        return FutureBuilder(
+                            future: getUser(room),
+                            builder: (context, AsyncSnapshot snapshot) {
+                              myUserClass.User roomUser = myUserClass.User();
 
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => ChatPage(
-                                              room: room,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: _buildRoomAvatar(room, roomUser),
-                                    );
-                                  });
-                            },
-                          );
+                              if (snapshot.hasData &&
+                                  snapshot.data.data() != null) {
+                                roomUser = myUserClass.User.fromJson(
+                                    snapshot.data.data());
+                              }
+
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                        room: room,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 0),
+                                  margin: EdgeInsets.only(top: 10),
+                                  decoration: BoxDecoration(
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.white,
+                                          spreadRadius: 1,
+                                          blurRadius: 1,
+                                          offset: Offset(0,
+                                              3), // changes position of shadow
+                                        )
+                                      ],
+                                      borderRadius: BorderRadius.horizontal(
+                                          right: Radius.circular(10))),
+                                  child: room.type == types.RoomType.group
+                                      ? _buildEinsatzRoomItem(room)
+                                      : _buildUserRoomItem(room, roomUser),
+                                ),
+                              );
+                            });
+                      },
+                    );
                   },
                 ),
               ),

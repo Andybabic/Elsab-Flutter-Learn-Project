@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:elsab/components/myChatTheme.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -192,6 +193,9 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         title: const Text('Chat'),
+        actions: [
+
+        ],
       ),
       body: StreamBuilder<types.Room>(
         initialData: widget.room,
@@ -202,6 +206,40 @@ class _ChatPageState extends State<ChatPage> {
             stream: FirebaseChatCore.instance.messages(snapshot.data!),
             builder: (context, snapshot) {
               return Chat(
+                  // theme: MyChatTheme(
+                  //   attachmentButtonIcon: Icon(Icons.attach_file),
+                  //   backgroundColor: Colors.blueGrey,
+                  //   dateDividerTextStyle: TextStyle(color:Colors.white),
+                  //   deliveredIcon: Icon(Icons.message),
+                  //   documentIcon: Icon(Icons.wallpaper),
+                  //   emptyChatPlaceholderTextStyle: TextStyle(color: Colors.orange),
+                  //   errorColor: Colors.red,
+                  //   errorIcon: Icon(Icons.error),
+                  //   inputBackgroundColor: Colors.black26,
+                  //   inputBorderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  //   inputTextStyle: TextStyle(),
+                  //   inputTextColor: Colors.white,
+                  //   messageBorderRadius: 10.0,
+                  //   primaryColor: Colors.white,
+                  //   receivedMessageBodyTextStyle: TextStyle(),
+                  //   receivedMessageCaptionTextStyle: TextStyle(),
+                  //   receivedMessageDocumentIconColor: Colors.orangeAccent,
+                  //   receivedMessageLinkDescriptionTextStyle: TextStyle(),
+                  //   receivedMessageLinkTitleTextStyle: TextStyle(),
+                  //   secondaryColor: Colors.blueGrey,
+                  //   seenIcon: Icon(Icons.air),
+                  //   sendButtonIcon: Icon(Icons.arrow_forward),
+                  //   sentMessageBodyTextStyle: TextStyle(),
+                  //   sentMessageCaptionTextStyle: TextStyle(),
+                  //   sentMessageDocumentIconColor: Colors.orangeAccent,
+                  //   sentMessageLinkDescriptionTextStyle: TextStyle(),
+                  //   sentMessageLinkTitleTextStyle: TextStyle(),
+                  //   userAvatarNameColors: [Colors.blue, Colors.yellow, Colors.green],
+                  //   userAvatarTextStyle: TextStyle(),
+                  //   userNameTextStyle: TextStyle(),
+                  //   sendingIcon: null,
+                  // ),
+                showUserNames: true,
                 isAttachmentUploading: _isAttachmentUploading,
                 messages: snapshot.data ?? [],
                 onAttachmentPressed: _handleAtachmentPressed,
