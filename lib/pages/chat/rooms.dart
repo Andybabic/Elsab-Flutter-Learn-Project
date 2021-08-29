@@ -21,6 +21,7 @@ class RoomsPage extends StatefulWidget {
 class _RoomsPageState extends State<RoomsPage> {
   bool _error = false;
   bool _initialized = false;
+  bool _showUserRooms = true;
   User? _user;
 
   @override
@@ -61,7 +62,7 @@ class _RoomsPageState extends State<RoomsPage> {
     if (room.type == types.RoomType.direct) {
       try {
         otherUser = room.users.firstWhere(
-          (u) => u.id != _user!.uid,
+              (u) => u.id != _user!.uid,
         );
       } catch (e) {
         otherUser = null;
@@ -102,9 +103,9 @@ class _RoomsPageState extends State<RoomsPage> {
           radius: 20,
           child: !hasImage
               ? Text(
-                  name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
-                )
+            name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
+            style: const TextStyle(color: Colors.white),
+          )
               : null,
         ),
         title: name.isEmpty
@@ -113,6 +114,28 @@ class _RoomsPageState extends State<RoomsPage> {
         subtitle: Text('${room.lastMessages ?? 'keine Nachrichten'}'),
       ),
     );
+  }
+
+  Stream<List<types.Room>> getCorrectRooms() {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return const Stream.empty();
+
+    final collection = _showUserRooms
+        ? FirebaseFirestore.instance
+        .collection('rooms')
+        .where('metadata', isNull: true)
+        .where('userIds', arrayContains: user.uid)
+        .orderBy('updatedAt', descending: true)
+        : FirebaseFirestore.instance
+        .collection('rooms')
+        .where('metadata', isNull: false)
+        .where('userIds', arrayContains: user.uid)
+        .orderBy('updatedAt', descending: true);
+
+    return collection
+        .snapshots()
+        .asyncMap((query) => processRoomsQuery(user, query));
   }
 
   @override
@@ -134,13 +157,13 @@ class _RoomsPageState extends State<RoomsPage> {
             onPressed: _user == null
                 ? null
                 : () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        fullscreenDialog: true,
-                        builder: (context) => const UsersPage(),
-                      ),
-                    );
-                  },
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) => const UsersPage(),
+                ),
+              );
+            },
           ),
         ],
         brightness: Brightness.dark,
@@ -148,29 +171,100 @@ class _RoomsPageState extends State<RoomsPage> {
       ),
       body: _user == null
           ? Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(
-                bottom: 200,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Not authenticated'),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          fullscreenDialog: true,
-                          builder: (context) => LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('Login'),
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(
+          bottom: 200,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Not authenticated'),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    fullscreenDialog: true,
+                    builder: (context) => LoginScreen(),
                   ),
-                ],
-              ),
-            )
-          : Container(
+                );
+              },
+              child: const Text('Login'),
+            ),
+          ],
+        ),
+      )
+          : Column(
+        children: [
+          Container(
+            height: 50,
+            color: Colors.blueGrey,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    label: Text("User",
+                        style: TextStyle(color: Colors.white)),
+                    style: TextButton.styleFrom(
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        letterSpacing: 2,
+                      ),
+                      backgroundColor:
+                      _showUserRooms ? Colors.lightBlue : Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(0),
+                        ),
+                      ),
+                    ),
+                    icon: Icon(
+                      Icons.account_circle_rounded,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _showUserRooms = true;
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: TextButton.icon(
+                    label: Text("Einsätze",
+                        style: TextStyle(color: Colors.white)),
+                    style: TextButton.styleFrom(
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        letterSpacing: 2,
+                      ),
+                      backgroundColor:
+                      _showUserRooms ? Colors.grey : Colors.lightBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(0),
+                        ),
+                      ),
+                    ),
+                    icon: Icon(
+                      Icons.assignment,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _showUserRooms = false;
+                      });
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
               color: Colors.blueGrey,
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -196,36 +290,50 @@ class _RoomsPageState extends State<RoomsPage> {
                       itemBuilder: (context, index) {
                         final room = snapshot.data![index];
 
-                        return FutureBuilder(
-                            future: getUser(room),
-                            builder: (context, AsyncSnapshot snapshot) {
-                              myUserClass.UserClass roomUser = myUserClass.UserClass();
-                              //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
-                              if (snapshot.hasData &&
-                                  snapshot.data.data() != null) {
-                                roomUser = myUserClass.UserClass.fromJson(
-                                    snapshot.data.data());
-                              }
-
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatPage(
-                                        room: room,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: _buildRoomAvatar(room, roomUser),
-                              );
-                            });
+                        if ((room.metadata!.containsKey("einsatzID") &&
+                            !_showUserRooms) ||
+                            (!room.metadata!.containsKey("einsatzID") &&
+                                _showUserRooms)) {
+                          return getListElement(room);
+                        } else
+                          return SizedBox(
+                            width: 0,
+                          );
                       },
                     );
                   },
                 ),
               ),
             ),
+          ),
+        ],
+      ),
     );
+  }
+
+  FutureBuilder<DocumentSnapshot<Map<String, dynamic>>> getListElement(
+      types.Room room) {
+    return FutureBuilder(
+        future: getUser(room),
+        builder: (context, AsyncSnapshot snapshot) {
+          myUserClass.UserClass roomUser = myUserClass.UserClass();
+          //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
+          if (snapshot.hasData && snapshot.data.data() != null) {
+            roomUser = myUserClass.UserClass.fromJson(snapshot.data.data());
+          }
+
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                    room: room,
+                  ),
+                ),
+              );
+            },
+            child: _buildRoomAvatar(room, roomUser),
+          );
+        });
   }
 }

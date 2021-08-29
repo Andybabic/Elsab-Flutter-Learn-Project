@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
@@ -44,6 +46,25 @@ class ChatConst{
   }
 
   static setRoom(){
+
+  }
+
+  static joinRoom(){
+
+  }
+
+  static deleteRoom(roomID) async{
+    print("inside");
+    await FirebaseFirestore.instance
+        .collection("rooms")
+        .where("id", isEqualTo: roomID)
+        .get()
+        .then((value) {
+        value.docs.first.reference.delete();
+    });
+  }
+
+  static leaveRoom(){
 
   }
 }
