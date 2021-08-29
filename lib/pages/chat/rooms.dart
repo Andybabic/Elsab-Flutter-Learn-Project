@@ -144,7 +144,6 @@ class _RoomsPageState extends State<RoomsPage> {
           ),
         ],
         brightness: Brightness.dark,
-       
         title: const Text('Messenger'),
       ),
       body: _user == null
@@ -193,38 +192,36 @@ class _RoomsPageState extends State<RoomsPage> {
                     }
 
                     return ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final room = snapshot.data![index];
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final room = snapshot.data![index];
 
-                              return FutureBuilder(
-                                  future: getUser(room),
-                                  builder: (context, AsyncSnapshot snapshot) {
-                                    myUserClass.User roomUser =
-                                        myUserClass.User();
-                                    //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
-                                    if (snapshot.hasData &&
-                                        snapshot.data.data() != null)
-                                      roomUser = myUserClass.User.fromJson(
-                                          snapshot.data.data());
-                                    else
-                                      return Text("");
+                        return FutureBuilder(
+                            future: getUser(room),
+                            builder: (context, AsyncSnapshot snapshot) {
+                              myUserClass.User roomUser = myUserClass.User();
+                              //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
+                              if (snapshot.hasData &&
+                                  snapshot.data.data() != null) {
+                                roomUser = myUserClass.User.fromJson(
+                                    snapshot.data.data());
+                              }
 
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => ChatPage(
-                                              room: room,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: _buildRoomAvatar(room, roomUser),
-                                    );
-                                  });
-                            },
-                          );
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                        room: room,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: _buildRoomAvatar(room, roomUser),
+                              );
+                            });
+                      },
+                    );
                   },
                 ),
               ),
