@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart';
+import 'package:elsab/pages/login/user_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 
 class UserConst{
   static var currentUser = auth.FirebaseAuth.instance.currentUser?? UserClass();
@@ -49,19 +52,18 @@ class ChatConst{
 
   }
 
-  static joinRoom(){
+  static joinRoom(roomID){
 
   }
 
   static deleteRoom(roomID) async{
-    print("inside");
-    await FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection("rooms")
-        .where("id", isEqualTo: roomID)
+        .where("__name__", isEqualTo: roomID)
         .get()
         .then((value) {
-        value.docs.first.reference.delete();
-    });
+          value.docs.first.reference.delete();
+        });
   }
 
   static leaveRoom(){

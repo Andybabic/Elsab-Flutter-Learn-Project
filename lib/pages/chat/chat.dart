@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elsab/components/class_einsatz.dart';
 import 'package:elsab/components/myChatTheme.dart';
 import 'package:elsab/constants/app_constants.dart';
+import 'package:elsab/pages/chat/rooms.dart';
+import 'package:elsab/pages/einseatze/einsatz_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,6 +12,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -31,14 +36,26 @@ class _ChatPageState extends State<ChatPage> {
   bool _isAttachmentUploading = false;
   bool _isRoomAdmin = false;
 
-  void getRoomRole() async{
-    var room = await FirebaseFirestore.instance.collection("rooms").doc(widget.room.id).get();
+  @override
+  void initState() {
+    super.initState();
+    getRoomRole();
+  }
 
-    if(room["userRoles"] == FirebaseAuth.instance.currentUser?.uid){
-      setState(() {
-        _isRoomAdmin = true;
-      });
-    }
+  void getRoomRole() async {
+    var room = await FirebaseFirestore.instance
+        .collection("rooms")
+        .doc(widget.room.id)
+        .get();
+
+    room["userRoles"].forEach((key, val) {
+      if (val != null && val == "admin") {
+        setState(() {
+          _isRoomAdmin = true;
+          print(_isRoomAdmin);
+        });
+      }
+    });
   }
 
   void _handleAtachmentPressed() {
@@ -201,22 +218,82 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  // Widget routeAfterDelete() {
+  //   return Scaffold(
+  //       body: Center(
+  //     child: Text(""),
+  //   ));
+  // }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Abbrechen"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Fortfahren"),
+      onPressed: () {
+        ChatConst.deleteRoom(widget.room.id);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => RoomsPage()),
+          (route) => false,
+        );
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Raum löschen"),
+      content: Text(
+          "Möchtest du als Admin dieses Raumes den Raum wirklich löschen?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void goToEinsatzDetails() async {
+    await FirebaseFirestore.instance
+        .collection("Einsätze")
+        .where("einsatzID", isEqualTo: widget.room.metadata?["einsatzID"])
+        .get()
+        .then((value) => Get.to(() =>
+            EinsatzDetailScreen(Einsaetze.fromJson(value.docs.first.data()))));
+  }
+
   @override
   Widget build(BuildContext context) {
-    getRoomRole();
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
         title: const Text('Chat'),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.arrow_downward),
-            tooltip: 'Go to the next page',
+            icon: const Icon(Icons.delete),
+            tooltip: 'Raum löschen',
             onPressed: () {
-              print(_isRoomAdmin);
-              if(_isRoomAdmin)
-              ChatConst.deleteRoom(widget.room);
+              if (_isRoomAdmin) {
+                showAlertDialog(context);
+              }
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.article_outlined),
+            tooltip: 'Zu den Details',
+            onPressed: () => {goToEinsatzDetails()},
           ),
         ],
       ),

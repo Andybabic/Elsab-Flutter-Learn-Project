@@ -116,27 +116,27 @@ class _RoomsPageState extends State<RoomsPage> {
     );
   }
 
-  Stream<List<types.Room>> getCorrectRooms() {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) return const Stream.empty();
-
-    final collection = _showUserRooms
-        ? FirebaseFirestore.instance
-        .collection('rooms')
-        .where('metadata', isNull: true)
-        .where('userIds', arrayContains: user.uid)
-        .orderBy('updatedAt', descending: true)
-        : FirebaseFirestore.instance
-        .collection('rooms')
-        .where('metadata', isNull: false)
-        .where('userIds', arrayContains: user.uid)
-        .orderBy('updatedAt', descending: true);
-
-    return collection
-        .snapshots()
-        .asyncMap((query) => processRoomsQuery(user, query));
-  }
+  // Stream<List<types.Room>> getCorrectRooms() {
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //
+  //   if (user == null) return const Stream.empty();
+  //
+  //   final collection = _showUserRooms
+  //       ? FirebaseFirestore.instance
+  //       .collection('rooms')
+  //       .where('metadata', isNull: true)
+  //       .where('userIds', arrayContains: user.uid)
+  //       .orderBy('updatedAt', descending: true)
+  //       : FirebaseFirestore.instance
+  //       .collection('rooms')
+  //       .where('metadata', isNull: false)
+  //       .where('userIds', arrayContains: user.uid)
+  //       .orderBy('updatedAt', descending: true);
+  //
+  //   return collection
+  //       .snapshots()
+  //       .asyncMap((query) => processRoomsQuery(user, query));
+  // }
 
   @override
   Widget build(BuildContext context) {
