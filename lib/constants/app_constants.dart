@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 
 class UserConst{
-  static var currentUser = auth.FirebaseAuth.instance.currentUser?? User();
+  static var currentUser = auth.FirebaseAuth.instance.currentUser?? UserClass();
 }
 
 class UtilsConst{
@@ -39,7 +39,7 @@ class ThemeConst{
 }
 
 class ChatConst{
-  static getRoom(User user, [Map<String,dynamic>? metadata]){
+  static getRoom(UserClass user, [Map<String,dynamic>? metadata]){
 
   }
 

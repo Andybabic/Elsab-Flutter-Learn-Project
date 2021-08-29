@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-class User {
+class UserClass {
   String email;
   String firstName;
   String lastName;
@@ -10,7 +10,7 @@ class User {
   String appIdentifier;
   Map<String, dynamic>? metadata;
 
-  User(
+  UserClass(
       {this.email = '',
       this.firstName =  '',
       this.lastName = '',
@@ -23,8 +23,8 @@ class User {
 
 
 
-  factory User.fromJson(Map<String, dynamic> parsedJson) {
-    return new User(
+  factory UserClass.fromJson(Map<String, dynamic> parsedJson) {
+    return new UserClass(
         email: parsedJson['email'] ?? '',
         firstName: parsedJson['firstName'] ?? '',
         lastName: parsedJson['lastName'] ?? '',

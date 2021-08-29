@@ -78,7 +78,7 @@ class _RoomsPageState extends State<RoomsPage> {
     return response;
   }
 
-  Widget _buildRoomAvatar(types.Room room, myUserClass.User roomUser) {
+  Widget _buildRoomAvatar(types.Room room, myUserClass.UserClass roomUser) {
     final hasImage = (room.imageUrl != null && room.imageUrl != '');
     final name = room.name ?? '';
     var color = Colors.blue;
@@ -199,11 +199,11 @@ class _RoomsPageState extends State<RoomsPage> {
                         return FutureBuilder(
                             future: getUser(room),
                             builder: (context, AsyncSnapshot snapshot) {
-                              myUserClass.User roomUser = myUserClass.User();
+                              myUserClass.UserClass roomUser = myUserClass.UserClass();
                               //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
                               if (snapshot.hasData &&
                                   snapshot.data.data() != null) {
-                                roomUser = myUserClass.User.fromJson(
+                                roomUser = myUserClass.UserClass.fromJson(
                                     snapshot.data.data());
                               }
 

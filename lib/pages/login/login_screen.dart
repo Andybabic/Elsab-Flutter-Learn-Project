@@ -196,7 +196,7 @@ class _LoginScreen extends State<LoginScreen> {
     dynamic result = await FireStoreUtils.loginWithEmailAndPassword(
         email!.trim(), password!.trim());
     await hideProgress();
-    if (result != null && result is User) {
+    if (result != null && result is UserClass) {
       print('Mail-check');
       showAlertDialog(context, 'Login success', "Successfully logged in");
       UserConst.currentUser = result;
@@ -213,7 +213,7 @@ class _LoginScreen extends State<LoginScreen> {
       await showProgress(context, 'Logging in, Please wait...', false);
       dynamic result = await FireStoreUtils.loginWithFacebook();
       await hideProgress();
-      if (result != null && result is User) {
+      if (result != null && result is UserClass) {
         print('FB-check');
       } else if (result != null && result is String) {
         showAlertDialog(context, 'Error', result);

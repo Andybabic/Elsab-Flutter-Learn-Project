@@ -325,7 +325,7 @@ class _SignUpState extends State<SignUpScreen> {
       lastName!.trim(),
     );
     await hideProgress();
-    if (result != null && result is User) {
+    if (result != null && result is UserClass) {
       print("signUp check");
       showAlertDialog(context, 'Success', 'You Successfully signed up!');
       UserConst.currentUser = result;

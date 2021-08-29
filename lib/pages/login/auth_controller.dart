@@ -14,17 +14,17 @@ class FireStoreUtils {
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
   static Reference storage = FirebaseStorage.instance.ref();
 
-  static Future<User?> getCurrentUser(String uid) async {
+  static Future<UserClass?> getCurrentUser(String uid) async {
     DocumentSnapshot<Map<String, dynamic>> userDocument =
         await firestore.collection('users').doc(uid).get();
     if (userDocument.data() != null && userDocument.exists) {
-      return User.fromJson(userDocument.data()!);
+      return UserClass.fromJson(userDocument.data()!);
     } else {
       return null;
     }
   }
 
-  static Future<User> updateCurrentUser(User user) async {
+  static Future<UserClass> updateCurrentUser(UserClass user) async {
     return await firestore
         .collection('users')
         .doc(user.id)
@@ -53,9 +53,9 @@ class FireStoreUtils {
           .signInWithEmailAndPassword(email: email, password: password);
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
           await firestore.collection('users').doc(result.user?.uid ?? '').get();
-      User? user;
+      UserClass? user;
       if (documentSnapshot.exists) {
-        user = User.fromJson(documentSnapshot.data() ?? {});
+        user = UserClass.fromJson(documentSnapshot.data() ?? {});
       }
       return user;
     } on auth.FirebaseAuthException catch (exception, s) {
@@ -103,7 +103,7 @@ class FireStoreUtils {
     auth.UserCredential authResult = await auth.FirebaseAuth.instance
         .signInWithCredential(
             auth.FacebookAuthProvider.credential(token.token));
-    User? user = await getCurrentUser(authResult.user?.uid ?? '');
+    UserClass? user = await getCurrentUser(authResult.user?.uid ?? '');
     if (user != null) {
       user.imageUrl = userData['picture']['data']['url'];
       user.firstName = userData['firstName'];
@@ -112,7 +112,7 @@ class FireStoreUtils {
       dynamic result = await updateCurrentUser(user);
       return result;
     } else {
-      user = User(
+      user = UserClass(
           email: userData['email'] ?? '',
           firstName: userData['firstName'] ?? '',
           lastName: userData['lastName'] ?? '',
@@ -129,7 +129,7 @@ class FireStoreUtils {
 
   /// save a new user document in the USERS table in firebase firestore
   /// returns an error message on failure or null on success
-  static Future<String?> firebaseCreateNewUser(User user) async =>
+  static Future<String?> firebaseCreateNewUser(UserClass user) async =>
       await firestore
           .collection('users')
           .doc(user.id)
@@ -153,7 +153,7 @@ class FireStoreUtils {
         profilePicUrl =
             await uploadUserImageToFireStorage(image, result.user?.uid ?? '');
       }
-      User user = User(
+      UserClass user = UserClass(
           email: emailAddress,
           firstName: firstName,
           lastName: lastName,
