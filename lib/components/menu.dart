@@ -1,10 +1,11 @@
 //import 'dart:async';
 import 'package:flutter/material.dart';
 
-//import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:elsab/pages/login/auth_screen.dart';
 import 'package:elsab/pages/chat/rooms.dart';
+import 'package:elsab/constants/app_constants.dart';
 
 Drawer menu(BuildContext context) {
   return Drawer(
@@ -33,7 +34,7 @@ Drawer menu(BuildContext context) {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('user'),
+                 Text(UserConst.currentUser.toString()),
                   Text('@User'),
                 ],
               ),

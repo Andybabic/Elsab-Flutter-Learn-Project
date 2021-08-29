@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class User {
   String email;
   String firstName;
@@ -12,7 +12,7 @@ class User {
 
   User(
       {this.email = '',
-      this.firstName = '',
+      this.firstName =  '',
       this.lastName = '',
         this.lastSeen = '',
       this.id = '',
@@ -20,6 +20,8 @@ class User {
       this.metadata = const{'status':0},
       })
       : this.appIdentifier = 'Flutter Login Screen ${Platform.operatingSystem}';
+
+
 
   factory User.fromJson(Map<String, dynamic> parsedJson) {
     return new User(
@@ -43,4 +45,28 @@ class User {
       'metadata' : this.metadata,
     };
   }
+
+
+
+//Save User on Device
+  SaveUserOnDevice() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('name2', email);
+    prefs.setString('firstName', firstName );
+    prefs.setString('lastName', lastName );
+    prefs.setString('lastSeen',lastSeen);
+    prefs.setString('id',id);
+    prefs.setString('imageUrl',imageUrl);
+  }
+
+   ReadUserOnDevice() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    email =     prefs.getString('email') ?? email;
+    firstName=  prefs.getString('firstName') ?? firstName;
+    lastName=   prefs.getString('lastName') ?? lastName;
+    lastSeen=   prefs.getString('lastSeen') ?? lastSeen;
+    id=         prefs.getString('id') ?? id;
+    imageUrl=   prefs.getString('imageUrl') ?? imageUrl;
+  }
+
 }

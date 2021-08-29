@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:elsab/components/class_user.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'constants/app_constants.dart';
@@ -16,6 +16,7 @@ Future<void> main() async {
   Get.put(AppStatusManager());
   //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //await GetStorage.init();
+  //User().ReadUserOnDevice();
   runApp(MyApp());
 }
 

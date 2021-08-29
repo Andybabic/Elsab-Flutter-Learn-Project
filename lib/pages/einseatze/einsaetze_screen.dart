@@ -14,7 +14,7 @@ class EinsatzlisteScreen extends StatelessWidget {
     return Scaffold(
       drawer: menu(context),
       appBar: AppBar(
-        title: Text(einsatz.einsatzcounter().toString()+' Einträge') ,
+        title: Text(einsatz.einsatzcounter().toString()+' Einsätze') ,
       ),
       backgroundColor: Colors.blueGrey,
       body: Center(

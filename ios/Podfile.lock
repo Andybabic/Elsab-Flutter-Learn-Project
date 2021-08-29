@@ -344,8 +344,8 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.7):
     - BoringSSL-GRPC/Interface (= 0.0.7)
   - BoringSSL-GRPC/Interface (0.0.7)
-  - cloud_firestore (2.5.0):
-    - Firebase/Firestore (= 8.5.0)
+  - cloud_firestore (2.5.1):
+    - Firebase/Firestore (= 8.6.0)
     - firebase_core
     - Flutter
   - DKImagePickerController/Core (4.3.2):
@@ -399,34 +399,34 @@ PODS:
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
-  - Firebase/Auth (8.5.0):
+  - Firebase/Auth (8.6.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 8.5.0)
-  - Firebase/CoreOnly (8.5.0):
-    - FirebaseCore (= 8.5.0)
-  - Firebase/Firestore (8.5.0):
+    - FirebaseAuth (~> 8.6.0)
+  - Firebase/CoreOnly (8.6.0):
+    - FirebaseCore (= 8.6.0)
+  - Firebase/Firestore (8.6.0):
     - Firebase/CoreOnly
-    - FirebaseFirestore (~> 8.5.0)
-  - Firebase/Storage (8.5.0):
+    - FirebaseFirestore (~> 8.6.0)
+  - Firebase/Storage (8.6.0):
     - Firebase/CoreOnly
-    - FirebaseStorage (~> 8.5.0)
-  - firebase_auth (3.0.2):
-    - Firebase/Auth (= 8.5.0)
+    - FirebaseStorage (~> 8.6.0)
+  - firebase_auth (3.1.0):
+    - Firebase/Auth (= 8.6.0)
     - firebase_core
     - Flutter
-  - firebase_core (1.5.0):
-    - Firebase/CoreOnly (= 8.5.0)
+  - firebase_core (1.6.0):
+    - Firebase/CoreOnly (= 8.6.0)
     - Flutter
   - firebase_storage (8.1.3):
-    - Firebase/Storage (= 8.5.0)
+    - Firebase/Storage (= 8.6.0)
     - firebase_core
     - Flutter
-  - FirebaseAuth (8.5.0):
+  - FirebaseAuth (8.6.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/Environment (~> 7.4)
     - GTMSessionFetcher/Core (~> 1.5)
-  - FirebaseCore (8.5.0):
+  - FirebaseCore (8.6.0):
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
@@ -435,7 +435,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebaseFirestore (8.5.0):
+  - FirebaseFirestore (8.6.0):
     - abseil/algorithm (= 0.20200225.0)
     - abseil/base (= 0.20200225.0)
     - abseil/container/flat_hash_map (= 0.20200225.0)
@@ -448,7 +448,7 @@ PODS:
     - "gRPC-C++ (~> 1.28.0)"
     - leveldb-library (~> 1.22)
     - nanopb (~> 2.30908.0)
-  - FirebaseStorage (8.5.0):
+  - FirebaseStorage (8.6.0):
     - FirebaseCore (~> 8.0)
     - GTMSessionFetcher/Core (~> 1.5)
   - Flutter (1.0.0)
@@ -521,6 +521,8 @@ PODS:
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
+  - shared_preferences (0.0.1):
+    - Flutter
   - sqflite (0.0.2):
     - Flutter
     - FMDB (>= 2.7.5)
@@ -540,6 +542,7 @@ DEPENDENCIES:
   - map_launcher (from `.symlinks/plugins/map_launcher/ios`)
   - open_file (from `.symlinks/plugins/open_file/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
@@ -594,6 +597,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/open_file/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
   url_launcher:
@@ -602,7 +607,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
-  cloud_firestore: e0516b69697b348db9a4d65f3b610dfd5ba3ac1e
+  cloud_firestore: 3280837bd2fdec18489ef93699527df4af4f177d
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   FBAEMKit: 5c8a8d08e5b2c79628490784883e0fcc75b12615
@@ -610,15 +615,15 @@ SPEC CHECKSUMS:
   FBSDKCoreKit_Basics: 8f978bce195845f609b0ec6b425949d0d24f525b
   FBSDKLoginKit: d65eb587a9eaa89295338fb0bb3b358bde0b7ae4
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
-  Firebase: ff8c73105b90e33e1dc6c8e5445d7adc2ccdc7c1
-  firebase_auth: 214ff86facd807bbb0ccff32f4b2d3865e3bc4f3
-  firebase_core: 82d486a6231b636aea229bd471bceca82cbe00a6
-  firebase_storage: 0f3cb82c835baf29533f025aeb352bab08fb8952
-  FirebaseAuth: b152ea261b60eeb9419ae7e5bf34761382b33277
-  FirebaseCore: 1c1ca72483b59b17050f5b4cec4fb748425a3901
+  Firebase: 21ac9f28b09a8bdfc005f34c984fca84e7e8786d
+  firebase_auth: 2dfa8e886191c24ddcf4da34463d47b72e6d19dc
+  firebase_core: c21ac09a8d23afd3594b56ed786bad12e5266bba
+  firebase_storage: 3a7f7803330e427df77c8832e20fc4b525656dfd
+  FirebaseAuth: 223adeeb2262b417532e89bf06a960e3a0a1e9e4
+  FirebaseCore: 620b677f70f5470a8e59cb77f3ddc666f6f09785
   FirebaseCoreDiagnostics: 3721920bde3a9a6d5aa093c1d25e9d3e47f694af
-  FirebaseFirestore: 9aa10de35bb76a5fe40fdf5c858669f0eac88a99
-  FirebaseStorage: 2c176ca64a68b45bddc3c7d4d2c0c839927ad92c
+  FirebaseFirestore: 7b8bd72aff4d3ad91498343e81fdbaa994ce8abe
+  FirebaseStorage: 2765944230981e63f8bd2938d9d5819158b7c34c
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   flutter_facebook_auth: 528d51ea1324741b366fa87fa5dfd41016422364
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
@@ -635,6 +640,7 @@ SPEC CHECKSUMS:
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef

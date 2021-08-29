@@ -14,6 +14,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:get/get.dart';
 
 class EinsatzDetailScreen extends StatelessWidget {
   final Einsaetze data;
@@ -117,37 +118,47 @@ class EinsatzDetailScreen extends StatelessWidget {
 
   void setEinsatzRoom(context) async {
     bool alreadyJoined = false;
-
+    //looking for existing room
     final roomDocument = await FirebaseFirestore.instance
         .collection("rooms")
         .where('metadata.einsatzID', isEqualTo: data.einsatzID)
         .get();
-
-    if(roomDocument.docs.isNotEmpty)
+    //when exist than join with user
+    if (roomDocument.docs.isNotEmpty)
       await roomDocument.docs.first["userIds"].forEach((element) => {
-        if(element.toString() == FirebaseAuth.instance.currentUser?.uid){
-          alreadyJoined = true
-        }
-      });
-
+            if (element.toString() == FirebaseAuth.instance.currentUser?.uid)
+              {alreadyJoined = true}
+          });
+    //if empty than create room
     if (roomDocument.docs.isEmpty) {
       FirebaseChatCore.instance.createGroupRoom(
-          metadata: data.toMap(),
-          name: data.objekt.isEmpty ? data.ort : data.objekt,
-
-          users: [],
+        metadata: data.toMap(),
+        name: data.objekt.isEmpty ? data.ort : data.objekt,
+        users: [],
       );
-    } else if(!alreadyJoined){
-      await FirebaseFirestore.instance.collection("rooms").doc(roomDocument.docs.first.id).update({"userIds" : FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])});
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          fullscreenDialog: true,
-          builder: (context) => RoomsPage(),
-        ),
-      );
-    } else {
-      showAlertDialog(context, "Raum öffnen/beitreten", "Du bist bereits diesem Raum beigetreten!");
     }
+    if (!alreadyJoined) {
+      await FirebaseFirestore.instance
+          .collection("rooms")
+          .doc(roomDocument.docs.first.id)
+          .update({
+        "userIds":
+            FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])
+      });
+    }else{
+
+    }
+
+    final room = FirebaseChatCore.instance.rooms();
+    room.listen(
+      (value) {
+        for (var i = 0; i < value.length; i++) {
+          if (value[i].id == roomDocument.docs.first.id) {
+            Get.to(() => ChatPage(room: value[i]));
+          }
+        }
+      },
+    );
   }
 
   @override
@@ -160,7 +171,7 @@ class EinsatzDetailScreen extends StatelessWidget {
             icon: const Icon(Icons.open_in_new),
             tooltip: 'Show Snackbar',
             onPressed: () {
-              if(FirebaseAuth.instance.currentUser != null)
+              if (FirebaseAuth.instance.currentUser != null)
                 setEinsatzRoom(context);
               else {
                 Navigator.of(context).push(
