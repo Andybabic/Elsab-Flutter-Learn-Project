@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart' as myUserClass;
 import 'package:elsab/components/menu.dart';
 import 'package:elsab/constants/app_constants.dart';
+import 'package:elsab/pages/dashboard/dashboard_page.dart';
+import 'package:elsab/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,6 +52,11 @@ class _RoomsPageState extends State<RoomsPage> {
 
   void logout() async {
     await FirebaseAuth.instance.signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => DashboardPage()),
+          (route) => false,
+    );
   }
 
   // String getUserName(types.User user) =>
@@ -164,6 +171,10 @@ class _RoomsPageState extends State<RoomsPage> {
                 ),
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => logout(),
           ),
         ],
         brightness: Brightness.dark,
@@ -328,6 +339,7 @@ class _RoomsPageState extends State<RoomsPage> {
                 MaterialPageRoute(
                   builder: (context) => ChatPage(
                     room: room,
+                    isUserRoom: _showUserRooms,
                   ),
                 ),
               );

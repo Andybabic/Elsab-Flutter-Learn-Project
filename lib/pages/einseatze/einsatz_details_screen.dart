@@ -117,7 +117,7 @@ class EinsatzDetailScreen extends StatelessWidget {
   }
 
   void setEinsatzRoom(context) async {
-    String? user = FirebaseAuth.instance.currentUser?.uid;
+    String? user = await FirebaseAuth.instance.currentUser?.uid;
 
     //looking for existing room
     final roomDocument = await FirebaseFirestore.instance
@@ -129,25 +129,24 @@ class EinsatzDetailScreen extends StatelessWidget {
     // if user not already joined => user joins the room
     // finally, send user to chat room
     if (roomDocument.docs.isNotEmpty) {
-      await roomDocument.docs.first["userIds"].forEach((element) async {
-        if (element.toString() == user) {
-          await FirebaseFirestore.instance
-              .collection("rooms")
-              .doc(roomDocument.docs.first.id)
-              .update({
-            "userIds":
-                FieldValue.arrayUnion([user])
-          });
-        }
-      });
+      print(roomDocument.docs.first["userIds"].contains(user));
+      if(!roomDocument.docs.first["userIds"].contains(user)) {
+        print("inside");
+        await FirebaseFirestore.instance
+            .collection("rooms")
+            .doc(roomDocument.docs.first.id)
+            .update({
+          "userIds":
+          FieldValue.arrayUnion([user])
+        });
+      }
       // send user to the chatroom
       final room = FirebaseChatCore.instance.rooms();
       room.listen(
         (value) {
           for (var i = 0; i < value.length; i++) {
             if (value[i].id == roomDocument.docs.first.id) {
-              print("in loop");
-              Get.to(() => ChatPage(room: value[i]));
+              Get.to(() => ChatPage(room: value[i], isUserRoom: false));
             }
           }
         },
@@ -164,7 +163,7 @@ class EinsatzDetailScreen extends StatelessWidget {
         "userRoles.$user": "admin"
       });
 
-      Get.to(() => ChatPage(room: newRoom));
+      Get.to(() => ChatPage(room: newRoom, isUserRoom: false));
     }
   }
 

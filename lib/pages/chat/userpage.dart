@@ -18,6 +18,7 @@ class UsersPage extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => ChatPage(
           room: room,
+          isUserRoom: true,
         ),
       ),
     );

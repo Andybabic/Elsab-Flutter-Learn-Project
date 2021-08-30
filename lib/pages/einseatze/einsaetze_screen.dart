@@ -35,7 +35,7 @@ class EinsatzlisteScreen extends StatelessWidget {
                             return Card(
                               child: InkWell(
                                 onTap: () {
-                                  Get.to(EinsatzDetailScreen(
+                                  Get.to(() => EinsatzDetailScreen(
                                       controller.einsatzlist[index]));
                                 }, // Handle your callback
                                 child: Container(
