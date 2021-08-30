@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,6 @@ import 'routes/app_routes.dart';
 import 'constants/app_constants.dart';
 import 'components/AppStatus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +22,6 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -40,24 +39,33 @@ class MyApp extends StatelessWidget {
   }
 }
 
+login(userdata) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+      await firestore.collection('users').doc(userdata).get();
+  UserClass? user;
+  if (documentSnapshot.exists) {
+    user = UserClass.fromJson(documentSnapshot.data() ?? {});
+    UserConst.currentUser = user;
+    user.saveUserGlobal();
+  }
+  return user;
+}
 
 lonincheck() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  bool Userexist = (prefs.getBool('UserExist') ?? false);
-  true;
-
-  if (Userexist) {
-    FirebaseAuth.instance
-        .authStateChanges()
-        .listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
-      }
-    });
-  }else{
-    print('wrong');
+  bool userexist = (prefs.getBool('UserExist') ?? false);
+  if (userexist) {
+    FirebaseAuth.instance.authStateChanges().listen(
+      (User? user) {
+        if (user == null) {
+          print('User is currently signed out!');
+        } else {
+          print('User is signed in!');
+          login(user.uid);
+        }
+      },
+    );
   }
 }

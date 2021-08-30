@@ -146,7 +146,7 @@ class FireStoreUtils {
     try {
       auth.UserCredential result = await auth.FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-              email: emailAddress, password: password);
+              email: emailAddress, password: password );
       String profilePicUrl = '';
       if (image != null) {
         await updateProgress('Uploading image, Please wait...');

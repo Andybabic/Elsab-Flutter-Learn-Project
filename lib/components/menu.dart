@@ -1,14 +1,20 @@
 //import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:get/get.dart';
 import 'package:elsab/pages/login/auth_screen.dart';
 import 'package:elsab/pages/chat/rooms.dart';
 import 'package:elsab/constants/app_constants.dart';
+import 'package:get_storage/get_storage.dart';
+
 
 Drawer menu(BuildContext context) {
+
+  final box = GetStorage();
   return Drawer(
+
     // Add a ListView to the drawer. This ensures the user can scroll
     // through the options in the drawer if there isn't enough vertical
     // space to fit everything.
@@ -25,7 +31,7 @@ Drawer menu(BuildContext context) {
                 height: 60,
                 decoration: BoxDecoration(shape: BoxShape.circle),
                 child: CircleAvatar(
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: ThemeConst.accent,
                   child: Icon(
                     Icons.check,
                   ),
@@ -34,8 +40,8 @@ Drawer menu(BuildContext context) {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                 Text(UserConst.currentUser.toString()),
-                  Text('@User'),
+                 Text((box.read('firstName')??'User') + " " + (box.read('lastName')??'Name')),
+                  Text(box.read('email')??'email'),
                 ],
               ),
             ],

@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart' as myUserClass;
-import 'package:elsab/components/menu.dart';
-import 'package:elsab/constants/app_constants.dart';
 import 'package:elsab/pages/dashboard/dashboard_page.dart';
-import 'package:elsab/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -55,7 +52,7 @@ class _RoomsPageState extends State<RoomsPage> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => DashboardPage()),
-          (route) => false,
+      (route) => false,
     );
   }
 
@@ -69,7 +66,7 @@ class _RoomsPageState extends State<RoomsPage> {
     if (room.type == types.RoomType.direct) {
       try {
         otherUser = room.users.firstWhere(
-              (u) => u.id != _user!.uid,
+          (u) => u.id != _user!.uid,
         );
       } catch (e) {
         otherUser = null;
@@ -89,30 +86,18 @@ class _RoomsPageState extends State<RoomsPage> {
   Widget _buildRoomAvatar(types.Room room, myUserClass.UserClass roomUser) {
     final hasImage = (room.imageUrl != null && room.imageUrl != '');
     final name = room.name ?? '';
-    var color = Colors.blue;
 
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+    return Card(
       margin: EdgeInsets.only(top: 10),
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-          color: Colors.white,
-          spreadRadius: 1,
-          blurRadius: 1,
-          offset: Offset(0, 3), // changes position of shadow
-        )
-      ], borderRadius: BorderRadius.horizontal(right: Radius.circular(10))),
       child: ListTile(
         visualDensity: VisualDensity(horizontal: 0, vertical: -4),
         leading: CircleAvatar(
-          backgroundColor: color,
           backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
           radius: 20,
           child: !hasImage
               ? Text(
-            name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
-            style: const TextStyle(color: Colors.white),
-          )
+                  name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
+                )
               : null,
         ),
         title: name.isEmpty
@@ -155,169 +140,65 @@ class _RoomsPageState extends State<RoomsPage> {
       return Container();
     }
 
-    return Scaffold(
-      drawer: menu(context),
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _user == null
-                ? null
-                : () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  fullscreenDialog: true,
-                  builder: (context) => const UsersPage(),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => logout(),
-          ),
-        ],
-        brightness: Brightness.dark,
-        title: const Text('Messenger'),
-      ),
-      body: _user == null
-          ? Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.only(
-          bottom: 200,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Not authenticated'),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    fullscreenDialog: true,
-                    builder: (context) => LoginScreen(),
-                  ),
-                );
-              },
-              child: const Text('Login'),
-            ),
-          ],
-        ),
-      )
-          : Column(
-        children: [
-          Container(
-            height: 50,
-            color: Colors.blueGrey,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: TextButton.icon(
-                    label: Text("User",
-                        style: TextStyle(color: Colors.white)),
-                    style: TextButton.styleFrom(
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        letterSpacing: 2,
-                      ),
-                      backgroundColor:
-                      _showUserRooms ? Colors.lightBlue : Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(0),
-                        ),
-                      ),
-                    ),
-                    icon: Icon(
-                      Icons.account_circle_rounded,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _showUserRooms = true;
-                      });
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: TextButton.icon(
-                    label: Text("Einsätze",
-                        style: TextStyle(color: Colors.white)),
-                    style: TextButton.styleFrom(
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        letterSpacing: 2,
-                      ),
-                      backgroundColor:
-                      _showUserRooms ? Colors.grey : Colors.lightBlue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(0),
-                        ),
-                      ),
-                    ),
-                    icon: Icon(
-                      Icons.assignment,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _showUserRooms = false;
-                      });
-                    },
-                  ),
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.blueGrey,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: StreamBuilder<List<types.Room>>(
-                  stream: FirebaseChatCore.instance.rooms(),
-                  initialData: const [],
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.only(
-                          bottom: 200,
-                        ),
-                        child: const Text('No rooms'),
-                      );
-                    }
-
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        final room = snapshot.data![index];
-
-                        if ((room.metadata!.containsKey("einsatzID") &&
-                            !_showUserRooms) ||
-                            (!room.metadata!.containsKey("einsatzID") &&
-                                _showUserRooms)) {
-                          return getListElement(room);
-                        } else
-                          return SizedBox(
-                            width: 0,
-                          );
-                      },
-                    );
-                  },
-                ),
+    return DefaultTabController(
+      initialIndex: 1,
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title:  TabBar(
+            tabs: <Widget>[
+              Tab(
+                icon: Icon(Icons.messenger),
               ),
-            ),
+              Tab(
+                icon: Icon(Icons.group),
+              ),
+            ],
           ),
-        ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _user == null
+              ? null
+              : () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) => const UsersPage(),
+                    ),
+                  );
+                },
+          child: const Icon(Icons.add),
+        ),
+        body: _user == null
+            ? Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.only(
+                  bottom: 200,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Not authenticated'),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            fullscreenDialog: true,
+                            builder: (context) => LoginScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              )
+            :  TabBarView(
+                children: <Widget>[
+                  Center(child: getList(true)),
+                  Center(child: getList(false))
+                ],
+              ),
       ),
     );
   }
@@ -347,5 +228,42 @@ class _RoomsPageState extends State<RoomsPage> {
             child: _buildRoomAvatar(room, roomUser),
           );
         });
+  }
+
+  getList(_showUserRooms) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: StreamBuilder<List<types.Room>>(
+        stream: FirebaseChatCore.instance.rooms(),
+        initialData: const [],
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(
+                bottom: 200,
+              ),
+              child: const Text('No rooms'),
+            );
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final room = snapshot.data![index];
+
+              if ((room.metadata!.containsKey("einsatzID") &&
+                      !_showUserRooms) ||
+                  (!room.metadata!.containsKey("einsatzID") &&
+                      _showUserRooms)) {
+                return getListElement(room);
+              } else
+                return SizedBox(
+                  width: 0,
+                );
+            },
+          );
+        },
+      ),
+    );
   }
 }

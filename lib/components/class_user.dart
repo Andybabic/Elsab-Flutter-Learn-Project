@@ -1,6 +1,10 @@
 import 'dart:io';
+import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 class UserClass {
+
+  final box = GetStorage();
+
   String email;
   String firstName;
   String lastName;
@@ -49,24 +53,27 @@ class UserClass {
 
 
 //Save User on Device
-  SaveUserOnDevice() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('name2', email);
-    prefs.setString('firstName', firstName );
-    prefs.setString('lastName', lastName );
-    prefs.setString('lastSeen',lastSeen);
-    prefs.setString('id',id);
-    prefs.setString('imageUrl',imageUrl);
+  saveUserGlobal()  {
+    box.write('email', email);
+    box.write('firstName', firstName );
+    box.write('lastName', lastName );
+    box.write('lastSeen',lastSeen);
+    box.write('id',id);
+    box.write('imageUrl',imageUrl);
+    print('done writing');
   }
 
-   ReadUserOnDevice() async {
+   static readUserOnDevice(id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    email =     prefs.getString('email') ?? email;
-    firstName=  prefs.getString('firstName') ?? firstName;
-    lastName=   prefs.getString('lastName') ?? lastName;
-    lastSeen=   prefs.getString('lastSeen') ?? lastSeen;
     id=         prefs.getString('id') ?? id;
-    imageUrl=   prefs.getString('imageUrl') ?? imageUrl;
+  }
+   saveUserOnDevice (String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('id', id);
+  }
+
+  static save(){
+    print('classenaufruf');
   }
 
 }

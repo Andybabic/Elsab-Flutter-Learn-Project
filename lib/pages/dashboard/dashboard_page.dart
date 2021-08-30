@@ -1,3 +1,4 @@
+import 'package:elsab/constants/app_constants.dart';
 import 'package:elsab/pages/chat/rooms.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,20 @@ class DashboardPage extends StatelessWidget {
     return GetBuilder<DashboardController>(
       builder: (controller) {
         return Scaffold(
+          //backgroundColor: ThemeConst.primarydark,
+          appBar: AppBar(
+            title: Text('Elsab.at'),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.add_alert),
+                tooltip: 'Show Snackbar',
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('This is a snackbar')));
+                },
+              ),
+            ],
+          ),
           drawer: menu(context),
           body: SafeArea(
             child: IndexedStack(
@@ -28,14 +43,13 @@ class DashboardPage extends StatelessWidget {
           ),
 
           bottomNavigationBar: BottomNavigationBar(
-            unselectedItemColor: Colors.black,
-            selectedItemColor: Colors.redAccent,
+            //unselectedItemColor: ThemeConst.light,
+            selectedItemColor: ThemeConst.accent,
             onTap: controller.changeTabIndex,
             currentIndex: controller.tabIndex,
             showSelectedLabels: false,
             showUnselectedLabels: false,
             type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
             elevation: 0,
             items: [
               _bottomNavigationBarItem(
