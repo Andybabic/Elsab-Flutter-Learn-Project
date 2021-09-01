@@ -21,23 +21,35 @@ class EinsatzItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Column(
-        children: [Icon(setEinsatzIcon(data.alarmstufe.toString()),color: ThemeConst.accent)],
-        mainAxisAlignment: MainAxisAlignment.center,
-      ),
-      title: Text((data.objekt.isNotEmpty && data.objekt != "")
-          ? data.objekt.toString()
-          : data.meldebild.toString(),style: TextStyle(color: ThemeConst.fontColor , fontSize: 20),),
-      subtitle: Text(
-        data.einsatzErzeugt.isEmpty
-            ? "Kein Datum bekannt"
-            : UtilsConst.getTimeDiff(DateTime.parse(data.einsatzErzeugt)),
-        style: TextStyle(color: ThemeConst.fontColor,fontSize: 10),
-      ),
-      trailing: Text(
-        data.alarmstufe.toString(),
-        style: TextStyle(color: ThemeConst.fontColor),
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: ListTile(
+        leading: Column(
+          children: [
+            Icon(setEinsatzIcon(data.alarmstufe.toString()),
+                color: ThemeConst.accent)
+          ],
+          mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        title: Padding(
+          padding: const EdgeInsets.only(bottom:6.0),
+          child: Text(
+            (data.objekt.isNotEmpty && data.objekt != "")
+                ? data.objekt.toString()
+                : data.meldebild.toString(),
+            style: TextStyle(color: ThemeConst.fontColor,),
+          ),
+        ),
+        subtitle: Text(
+          data.einsatzErzeugt.isEmpty
+              ? "Kein Datum bekannt"
+              : UtilsConst.getTimeDiff(DateTime.parse(data.einsatzErzeugt)),
+          style: TextStyle(color: ThemeConst.fontColor, fontSize: 10),
+        ),
+        trailing: Text(
+          data.alarmstufe.toString(),
+          style: TextStyle(color: ThemeConst.fontColor),
+        ),
       ),
     );
   }

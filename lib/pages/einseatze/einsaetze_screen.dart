@@ -1,3 +1,4 @@
+import 'package:elsab/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'einsatz_controller.dart';
@@ -7,6 +8,9 @@ import 'dart:async';
 
 class EinsatzlisteScreen extends StatelessWidget {
   final EinsatzController einsatz = Get.put(EinsatzController());
+  bool isChoosing;
+
+  EinsatzlisteScreen({this.isChoosing = false});
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +36,13 @@ class EinsatzlisteScreen extends StatelessWidget {
 
                               child: InkWell(
                                 onTap: () {
-                                  Get.to(() => EinsatzDetailScreen(
-                                      controller.einsatzlist[index]));
+                                  if(!this.isChoosing)
+                                    Get.to(() => EinsatzDetailScreen(
+                                        controller.einsatzlist[index]));
+                                  else {
+                                    ChatConst.setEinsatzRoom(controller.einsatzlist[index]);
+                                    Get.back();
+                                  }
                                 }, // Handle your callback
 
                                 //height: 90,

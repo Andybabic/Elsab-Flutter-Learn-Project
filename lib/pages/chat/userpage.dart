@@ -140,7 +140,6 @@ class _UsersPageState extends State<UsersPage> {
         ],
       ),
       body: Container(
-        color: Colors.blueGrey,
         child: StreamBuilder<List<types.User>>(
           stream: FirebaseChatCore.instance.users(),
           initialData: const [],
@@ -177,8 +176,6 @@ class _UsersPageState extends State<UsersPage> {
                                       letterSpacing: 1.5,
                                     )),
                                 style: TextButton.styleFrom(
-                                  primary: Colors.lightBlue,
-                                  onSurface: Colors.blue,
                                   backgroundColor: ThemeConst.accent,
                                   padding: EdgeInsets.all(12),
                                 ))
@@ -219,7 +216,7 @@ class _UsersPageState extends State<UsersPage> {
                           decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.white,
+                                  color: ThemeConst.lightPrimary,
                                   spreadRadius: 1,
                                   blurRadius: 1,
                                   offset: Offset(

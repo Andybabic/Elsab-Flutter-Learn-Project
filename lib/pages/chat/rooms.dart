@@ -104,23 +104,29 @@ class _RoomsPageState extends State<RoomsPage> {
 
     return Card(
       margin: EdgeInsets.only(top: 10),
-      child: ListTile(
-        visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-        leading: CircleAvatar(
-          backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
-          radius: 20,
-          child: !hasImage
-              ? Text(
-            roomName.isEmpty
-                ? roomUser.lastName
-                : roomName[0].toUpperCase(),
-          )
-              : null,
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: ListTile(
+          visualDensity: VisualDensity(horizontal: 0, vertical: -1),
+          leading: CircleAvatar(
+            backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
+            radius: 20,
+            child: !hasImage
+                ? Text(
+              roomName.isEmpty
+                  ? roomUser.lastName
+                  : roomName[0].toUpperCase(),
+            )
+                : null,
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom:6.0),
+            child: roomName.isEmpty
+                ? Text("${roomUser.firstName} ${roomUser.lastName}".trim())
+                : Text(roomName),
+          ),
+          subtitle: Text(lastMessage),
         ),
-        title: roomName.isEmpty
-            ? Text("${roomUser.firstName} ${roomUser.lastName}".trim())
-            : Text(roomName),
-        subtitle: Text(lastMessage),
       ),
     );
   }
@@ -168,7 +174,7 @@ class _RoomsPageState extends State<RoomsPage> {
                   builder: (context) {
                     return _showUserRooms
                         ? const UsersPage()
-                        : EinsatzlisteScreen();
+                        : EinsatzlisteScreen(isChoosing: true);
                   }),
             );
           },
@@ -243,14 +249,15 @@ class _RoomsPageState extends State<RoomsPage> {
         stream: FirebaseChatCore.instance.rooms(),
         initialData: const [],
         builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(
-                bottom: 200,
-              ),
-              child: const Text('No rooms'),
-            );
+          if(!snapshot.hasData || snapshot.data!.isEmpty){
+            if (snapshot.connectionState == ConnectionState.active) {
+              return Center(
+                child: const Text('No rooms'),
+              );
+            }
+            else{
+              return Center(child: CircularProgressIndicator());
+            }
           }
           return ListView.builder(
             itemCount: snapshot.data!.length,

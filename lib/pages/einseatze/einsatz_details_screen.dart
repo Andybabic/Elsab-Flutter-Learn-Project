@@ -115,42 +115,6 @@ class EinsatzDetailScreen extends StatelessWidget {
     return [lat, long, locationIsUnknown];
   }
 
-  void setEinsatzRoom(context) async {
-    String? user = FirebaseAuth.instance.currentUser?.uid;
-
-    //looking for existing room
-    final roomDocument = await FirebaseFirestore.instance
-        .collection("rooms")
-        .where('metadata.einsatzID', isEqualTo: data.einsatzID)
-        .get();
-
-    // when exists, look if user already joined
-    // if user not already joined => user joins the room
-    // finally, send user to chat room
-    if (roomDocument.docs.isNotEmpty) {
-      if (!roomDocument.docs.first["userIds"].contains(user)) {
-        ChatConst.joinRoom(roomDocument.docs.first.id, user);
-      }
-      // send user to the chatroom
-      final room = FirebaseChatCore.instance.rooms();
-      room.listen(
-        (value) {
-          for (var i = 0; i < value.length; i++) {
-            if (value[i].id == roomDocument.docs.first.id) {
-              Get.to(() => ChatPage(room: value[i], isUserRoom: false));
-            }
-          }
-        },
-      );
-    } //if empty than create room and send user to room
-    else if (roomDocument.docs.isEmpty) {
-      final newRoom = await ChatConst.createGroupUserRoom([],
-          roomName: "EinsatzRaum ${data.meldebild.isEmpty? data.einsatzID : data.meldebild}", metadata: data.toMap());
-
-      Get.to(() => ChatPage(room: newRoom, isUserRoom: false));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,7 +126,7 @@ class EinsatzDetailScreen extends StatelessWidget {
             tooltip: 'Show Snackbar',
             onPressed: () {
               if (FirebaseAuth.instance.currentUser != null)
-                setEinsatzRoom(context);
+                ChatConst.setEinsatzRoom(data);
               else {
                 Navigator.of(context).push(
                   MaterialPageRoute(

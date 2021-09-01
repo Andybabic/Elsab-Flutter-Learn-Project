@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart';
+import 'package:elsab/pages/chat/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:intl/intl.dart'; // for date format
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -32,10 +35,11 @@ class UtilsConst {
 }
 
 class ThemeConst {
-  static Color lightPrimary = const Color(0xFFE5E5E5);
-  static Color accent = const Color(0xFFA50104);
-  static Color fontColor = const Color(0xFF071721);
-  static Color dark = const Color(0xFF4E4E4E);
+  static final Color lightPrimary = const Color(0xFFE5E5E5);
+  static final Color accent = const Color(0xFFA50104);
+  static final Color fontColor = const Color(0xFF071721);
+  static final Color dark = const Color(0xFF4E4E4E);
+  static final double cardTitleSize = 19.0;
 
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
@@ -64,16 +68,39 @@ class ThemeConst {
   );
 
   static ThemeData darkTheme = ThemeData(
-    brightness: Brightness.dark,
-    scaffoldBackgroundColor: dark,
-    highlightColor: dark,
-    splashColor: dark,
-    primaryColor: dark,
-    cardColor: dark,
-    bottomAppBarColor: dark,
-    buttonColor: dark,
-    disabledColor: dark,
-  );
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: dark,
+      backgroundColor: dark,
+      highlightColor: dark,
+      splashColor: dark,
+      primaryColor: dark,
+      canvasColor: Colors.grey,
+      cardColor: Colors.white70,
+      bottomAppBarColor: Colors.white70,
+      buttonColor: Colors.white,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.white70,
+      ),
+      //disabledColor: dark,
+      //canvasColor: Colors.white60,
+      appBarTheme: AppBarTheme(
+        textTheme: TextTheme(
+            headline6: TextStyle(
+          color: dark,
+          fontSize: 30,
+          fontWeight: FontWeight.w100,
+        )),
+        color: dark,
+        elevation: 40, // This removes the shadow from all App Bars.
+      ),
+      textTheme: TextTheme(
+        bodyText1: TextStyle(color: Colors.black),
+        bodyText2: TextStyle(color: Colors.black),
+        headline1: TextStyle(color: Colors.black),
+        caption: TextStyle(color: Colors.black),
+        button: TextStyle(color: Colors.white),
+        subtitle1: TextStyle(color: Colors.black, fontSize: cardTitleSize),
+      ));
 }
 
 class ChatConst {
@@ -101,6 +128,44 @@ class ChatConst {
         {"userRoles.${FirebaseAuth.instance.currentUser?.uid}": "admin"});
 
     return room;
+  }
+
+  static void setEinsatzRoom(roomData) async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+
+    //looking for existing room
+    final roomDocument = await FirebaseFirestore.instance
+        .collection("rooms")
+        .where('metadata.einsatzID', isEqualTo: roomData.einsatzID)
+        .get();
+
+    // when exists, look if user already joined
+    // if user not already joined => user joins the room
+    // finally, send user to chat room
+    if (roomDocument.docs.isNotEmpty) {
+      if (!roomDocument.docs.first["userIds"].contains(user)) {
+        ChatConst.joinRoom(roomDocument.docs.first.id, user);
+      }
+      // send user to the chatroom
+      final room = FirebaseChatCore.instance.rooms();
+      room.listen(
+        (value) {
+          for (var i = 0; i < value.length; i++) {
+            if (value[i].id == roomDocument.docs.first.id) {
+              Get.to(() => ChatPage(room: value[i], isUserRoom: false));
+            }
+          }
+        },
+      );
+    } //if empty than create room and send user to room
+    else if (roomDocument.docs.isEmpty) {
+      final newRoom = await ChatConst.createGroupUserRoom([],
+          roomName:
+              "EinsatzRaum ${roomData.einsatzID}:\n${roomData.objekt.isEmpty ? roomData.meldebild : roomData.objekt}",
+          metadata: roomData.toMap());
+
+      Get.to(() => ChatPage(room: newRoom, isUserRoom: false));
+    }
   }
 
   static Future<bool> getRoomRole(String roomID) async {
