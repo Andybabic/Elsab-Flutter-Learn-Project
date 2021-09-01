@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:elsab/components/class_user.dart' as myUserClass;
+import 'package:elsab/components/class_user.dart';
+import 'package:elsab/constants/app_constants.dart';
 import 'package:elsab/pages/dashboard/dashboard_page.dart';
+import 'package:elsab/pages/einseatze/einsaetze_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +22,7 @@ class RoomsPage extends StatefulWidget {
 class _RoomsPageState extends State<RoomsPage> {
   bool _error = false;
   bool _initialized = false;
-  bool _showUserRooms = true;
+  bool _showUserRooms = false;
   User? _user;
 
   @override
@@ -52,21 +54,19 @@ class _RoomsPageState extends State<RoomsPage> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => DashboardPage()),
-      (route) => false,
+          (route) => false,
     );
   }
-
-  // String getUserName(types.User user) =>
-  //     '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getUser(
       types.Room room) async {
     var otherUser;
 
-    if (room.type == types.RoomType.direct) {
+    if (room.type == types.RoomType.direct ||
+        room.type == types.RoomType.group) {
       try {
         otherUser = room.users.firstWhere(
-          (u) => u.id != _user!.uid,
+              (u) => u.id != _user!.uid,
         );
       } catch (e) {
         otherUser = null;
@@ -83,9 +83,24 @@ class _RoomsPageState extends State<RoomsPage> {
     return response;
   }
 
-  Widget _buildRoomAvatar(types.Room room, myUserClass.UserClass roomUser) {
+  Widget _buildRoomAvatar(types.Room room, UserClass roomUser) {
     final hasImage = (room.imageUrl != null && room.imageUrl != '');
-    final name = room.name ?? '';
+    var roomName = room.name ?? '';
+    var lastMessage = "Keine Nachricht";
+
+    // get last messages
+    try {
+      String key = room.metadata?['lastMessage'].keys.elementAt(0)?? "";
+      String val = room
+          .metadata?['lastMessage'].values.elementAt(0)?? "";
+
+      if(val.isNotEmpty)
+      lastMessage = "$key: $val";
+    }catch(_){}
+
+    if (roomName.isEmpty && room.type == types.RoomType.group) {
+      roomName = "Kein Gruppenname (${roomUser.firstName},..)";
+    }
 
     return Card(
       margin: EdgeInsets.only(top: 10),
@@ -96,39 +111,19 @@ class _RoomsPageState extends State<RoomsPage> {
           radius: 20,
           child: !hasImage
               ? Text(
-                  name.isEmpty ? roomUser.lastName : name[0].toUpperCase(),
-                )
+            roomName.isEmpty
+                ? roomUser.lastName
+                : roomName[0].toUpperCase(),
+          )
               : null,
         ),
-        title: name.isEmpty
+        title: roomName.isEmpty
             ? Text("${roomUser.firstName} ${roomUser.lastName}".trim())
-            : Text(name),
-        subtitle: Text('${room.lastMessages ?? 'keine Nachrichten'}'),
+            : Text(roomName),
+        subtitle: Text(lastMessage),
       ),
     );
   }
-
-  // Stream<List<types.Room>> getCorrectRooms() {
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //
-  //   if (user == null) return const Stream.empty();
-  //
-  //   final collection = _showUserRooms
-  //       ? FirebaseFirestore.instance
-  //       .collection('rooms')
-  //       .where('metadata', isNull: true)
-  //       .where('userIds', arrayContains: user.uid)
-  //       .orderBy('updatedAt', descending: true)
-  //       : FirebaseFirestore.instance
-  //       .collection('rooms')
-  //       .where('metadata', isNull: false)
-  //       .where('userIds', arrayContains: user.uid)
-  //       .orderBy('updatedAt', descending: true);
-  //
-  //   return collection
-  //       .snapshots()
-  //       .asyncMap((query) => processRoomsQuery(user, query));
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -145,60 +140,70 @@ class _RoomsPageState extends State<RoomsPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title:  TabBar(
+          title: TabBar(
             tabs: <Widget>[
               Tab(
+                //     splashColor: Colors.blue,
+                // highlightColor: Colors.grey,
                 icon: Icon(Icons.messenger),
               ),
               Tab(
                 icon: Icon(Icons.group),
               ),
             ],
+            onTap: (int index) {
+              setState(() {
+                _showUserRooms = (index == 0 ? true : false);
+              });
+            },
           ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: _user == null
               ? null
               : () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (context) => const UsersPage(),
-                    ),
-                  );
-                },
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) {
+                    return _showUserRooms
+                        ? const UsersPage()
+                        : EinsatzlisteScreen();
+                  }),
+            );
+          },
           child: const Icon(Icons.add),
         ),
         body: _user == null
             ? Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.only(
-                  bottom: 200,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Not authenticated'),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            fullscreenDialog: true,
-                            builder: (context) => LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: const Text('Login'),
+          alignment: Alignment.center,
+          margin: const EdgeInsets.only(
+            bottom: 200,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Not authenticated'),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) => LoginScreen(),
                     ),
-                  ],
-                ),
-              )
-            :  TabBarView(
-                children: <Widget>[
-                  Center(child: getList(true)),
-                  Center(child: getList(false))
-                ],
+                  );
+                },
+                child: const Text('Login'),
               ),
+            ],
+          ),
+        )
+            : TabBarView(
+          children: <Widget>[
+            Center(child: getList()),
+            Center(child: getList())
+          ],
+        ),
       ),
     );
   }
@@ -208,20 +213,21 @@ class _RoomsPageState extends State<RoomsPage> {
     return FutureBuilder(
         future: getUser(room),
         builder: (context, AsyncSnapshot snapshot) {
-          myUserClass.UserClass roomUser = myUserClass.UserClass();
+          UserClass roomUser = UserClass();
           //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);
           if (snapshot.hasData && snapshot.data.data() != null) {
-            roomUser = myUserClass.UserClass.fromJson(snapshot.data.data());
+            roomUser = UserClass.fromJson(snapshot.data.data());
           }
 
           return GestureDetector(
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                    room: room,
-                    isUserRoom: _showUserRooms,
-                  ),
+                  builder: (context) =>
+                      ChatPage(
+                        room: room,
+                        isUserRoom: _showUserRooms,
+                      ),
                 ),
               );
             },
@@ -230,7 +236,7 @@ class _RoomsPageState extends State<RoomsPage> {
         });
   }
 
-  getList(_showUserRooms) {
+  getList() {
     return Container(
       padding: const EdgeInsets.all(10),
       child: StreamBuilder<List<types.Room>>(
@@ -251,10 +257,12 @@ class _RoomsPageState extends State<RoomsPage> {
             itemBuilder: (context, index) {
               final room = snapshot.data![index];
 
-              if ((room.metadata!.containsKey("einsatzID") &&
-                      !_showUserRooms) ||
-                  (!room.metadata!.containsKey("einsatzID") &&
-                      _showUserRooms)) {
+              if (((room.metadata == null ||
+                  !room.metadata!.containsKey("einsatzID")) &&
+                  _showUserRooms) ||
+                  (room.metadata != null &&
+                      room.metadata!.containsKey("einsatzID") &&
+                      !_showUserRooms)) {
                 return getListElement(room);
               } else
                 return SizedBox(

@@ -17,7 +17,7 @@ Future<void> main() async {
   //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   //await GetStorage.init();
   //User().ReadUserOnDevice();
-  lonincheck();
+  loginCheck();
   runApp(MyApp());
 }
 
@@ -52,7 +52,7 @@ login(userdata) async {
   return user;
 }
 
-lonincheck() async {
+loginCheck() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   bool userexist = (prefs.getBool('UserExist') ?? false);

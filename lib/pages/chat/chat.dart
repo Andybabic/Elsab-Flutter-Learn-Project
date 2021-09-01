@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_einsatz.dart';
+import 'package:elsab/components/class_user.dart';
 import 'package:elsab/constants/app_constants.dart';
 import 'package:elsab/pages/chat/rooms.dart';
 import 'package:elsab/pages/einseatze/einsatz_details_screen.dart';
+import 'package:elsab/pages/home/home_page.dart';
+import 'package:elsab/routes/app_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -36,7 +39,10 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   bool _isAttachmentUploading = false;
   bool _isRoomAdmin = false;
-  User? currentUser;
+  bool _isEinsatzRoom = false;
+
+  //UserClass? _currentUser;
+  User? _currentUser;
   bool _refreshAllowed = true;
 
   @override
@@ -44,24 +50,22 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     getCurrentUser();
     getRoomRole();
+    getRoomType();
   }
 
-  void getCurrentUser() async{
-    currentUser = FirebaseAuth.instance.currentUser;
+  void getRoomType() async {
+    _isEinsatzRoom = widget.room.metadata?.containsKey("einsatzID") ?? false;
+  }
+
+  void getCurrentUser() async {
+    //_currentUser = UserConst.currentUser; => not working...
+    _currentUser = FirebaseAuth.instance.currentUser;
   }
 
   void getRoomRole() async {
-    var room = await FirebaseFirestore.instance
-        .collection("rooms")
-        .doc(widget.room.id)
-        .get();
-
-    room["userRoles"]?.forEach((key, val) {
-      if (val != null && key == currentUser?.uid && val == "admin") {
-        setState(() {
-          _isRoomAdmin = true;
-        });
-      }
+    bool response = await ChatConst.getRoomRole(widget.room.id);
+    setState(() {
+      _isRoomAdmin = response;
     });
   }
 
@@ -212,10 +216,19 @@ class _ChatPageState extends State<ChatPage> {
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  void _handleSendPressed(types.PartialText message) async {
     FirebaseChatCore.instance.sendMessage(
       message,
       widget.room.id,
+    );
+
+    FirebaseFirestore.instance.collection("rooms").doc(widget.room.id).set(
+      {
+        "metadata": {
+          "lastMessage": {_currentUser?.uid ?? "Namenlos": message.text}
+        }
+      },
+      SetOptions(merge: true),
     );
   }
 
@@ -224,13 +237,6 @@ class _ChatPageState extends State<ChatPage> {
       _isAttachmentUploading = uploading;
     });
   }
-
-  // Widget routeAfterDelete() {
-  //   return Scaffold(
-  //       body: Center(
-  //     child: Text(""),
-  //   ));
-  // }
 
   showAlertDialog(BuildContext context) {
     // set up the buttons
@@ -289,9 +295,11 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
-        title: const Text('Chat'),
+        title: (widget.room.type == types.RoomType.direct)
+            ? Text('Chat mit ${widget.room.users.last.firstName}')
+            : Text("Chat ${widget.room.name}"),
         actions: <Widget>[
-          if (_isRoomAdmin)
+          if (_isRoomAdmin && widget.room.type != types.RoomType.direct)
             IconButton(
               icon: const Icon(Icons.delete),
               tooltip: 'Raum löschen',
@@ -299,7 +307,7 @@ class _ChatPageState extends State<ChatPage> {
                 showAlertDialog(context);
               },
             ),
-          if (!widget.isUserRoom)
+          if (_isEinsatzRoom)
             IconButton(
               icon: const Icon(Icons.article_outlined),
               tooltip: 'Zu den Details',
@@ -312,56 +320,86 @@ class _ChatPageState extends State<ChatPage> {
               initialData: widget.room,
               stream: FirebaseChatCore.instance.room(widget.room.id),
               builder: (context, snapshot) {
-                return StreamBuilder<List<types.Message>>(
-                  initialData: const [],
-                  stream: FirebaseChatCore.instance.messages(snapshot.data!),
-                  builder: (context, snapshot) {
-                    return Chat(
-                      // theme: MyChatTheme(
-                      //   attachmentButtonIcon: Icon(Icons.attach_file),
-                      //   backgroundColor: Colors.blueGrey,
-                      //   dateDividerTextStyle: TextStyle(color:Colors.white),
-                      //   deliveredIcon: Icon(Icons.message),
-                      //   documentIcon: Icon(Icons.wallpaper),
-                      //   emptyChatPlaceholderTextStyle: TextStyle(color: Colors.orange),
-                      //   errorColor: Colors.red,
-                      //   errorIcon: Icon(Icons.error),
-                      //   inputBackgroundColor: Colors.black26,
-                      //   inputBorderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      //   inputTextStyle: TextStyle(),
-                      //   inputTextColor: Colors.white,
-                      //   messageBorderRadius: 10.0,
-                      //   primaryColor: Colors.white,
-                      //   receivedMessageBodyTextStyle: TextStyle(),
-                      //   receivedMessageCaptionTextStyle: TextStyle(),
-                      //   receivedMessageDocumentIconColor: Colors.orangeAccent,
-                      //   receivedMessageLinkDescriptionTextStyle: TextStyle(),
-                      //   receivedMessageLinkTitleTextStyle: TextStyle(),
-                      //   secondaryColor: Colors.blueGrey,
-                      //   seenIcon: Icon(Icons.air),
-                      //   sendButtonIcon: Icon(Icons.arrow_forward),
-                      //   sentMessageBodyTextStyle: TextStyle(),
-                      //   sentMessageCaptionTextStyle: TextStyle(),
-                      //   sentMessageDocumentIconColor: Colors.orangeAccent,
-                      //   sentMessageLinkDescriptionTextStyle: TextStyle(),
-                      //   sentMessageLinkTitleTextStyle: TextStyle(),
-                      //   userAvatarNameColors: [Colors.blue, Colors.yellow, Colors.green],
-                      //   userAvatarTextStyle: TextStyle(),
-                      //   userNameTextStyle: TextStyle(),
-                      //   sendingIcon: null,
-                      // ),
-                      showUserNames: true,
-                      isAttachmentUploading: _isAttachmentUploading,
-                      messages: snapshot.data ?? [],
-                      onAttachmentPressed: _handleAtachmentPressed,
-                      onMessageTap: _handleMessageTap,
-                      onPreviewDataFetched: _handlePreviewDataFetched,
-                      onSendPressed: _handleSendPressed,
-                      user: types.User(
-                        id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
+                if (!snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.waiting) {
+                  print("hmm");
+                } else if (snapshot.hasData) {
+                  return StreamBuilder<List<types.Message>>(
+                    initialData: const [],
+                    stream: FirebaseChatCore.instance.messages(snapshot.data!),
+                    builder: (context, snapshot) {
+                      return Chat(
+                        // theme: MyChatTheme(
+                        //   attachmentButtonIcon: Icon(Icons.attach_file),
+                        //   backgroundColor: Colors.blueGrey,
+                        //   dateDividerTextStyle: TextStyle(color:Colors.white),
+                        //   deliveredIcon: Icon(Icons.message),
+                        //   documentIcon: Icon(Icons.wallpaper),
+                        //   emptyChatPlaceholderTextStyle: TextStyle(color: Colors.orange),
+                        //   errorColor: Colors.red,
+                        //   errorIcon: Icon(Icons.error),
+                        //   inputBackgroundColor: Colors.black26,
+                        //   inputBorderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        //   inputTextStyle: TextStyle(),
+                        //   inputTextColor: Colors.white,
+                        //   messageBorderRadius: 10.0,
+                        //   primaryColor: Colors.white,
+                        //   receivedMessageBodyTextStyle: TextStyle(),
+                        //   receivedMessageCaptionTextStyle: TextStyle(),
+                        //   receivedMessageDocumentIconColor: Colors.orangeAccent,
+                        //   receivedMessageLinkDescriptionTextStyle: TextStyle(),
+                        //   receivedMessageLinkTitleTextStyle: TextStyle(),
+                        //   secondaryColor: Colors.blueGrey,
+                        //   seenIcon: Icon(Icons.air),
+                        //   sendButtonIcon: Icon(Icons.arrow_forward),
+                        //   sentMessageBodyTextStyle: TextStyle(),
+                        //   sentMessageCaptionTextStyle: TextStyle(),
+                        //   sentMessageDocumentIconColor: Colors.orangeAccent,
+                        //   sentMessageLinkDescriptionTextStyle: TextStyle(),
+                        //   sentMessageLinkTitleTextStyle: TextStyle(),
+                        //   userAvatarNameColors: [Colors.blue, Colors.yellow, Colors.green],
+                        //   userAvatarTextStyle: TextStyle(),
+                        //   userNameTextStyle: TextStyle(),
+                        //   sendingIcon: null,
+                        // ),
+                        showUserNames: true,
+                        isAttachmentUploading: _isAttachmentUploading,
+                        messages: snapshot.data ?? [],
+                        onAttachmentPressed: _handleAtachmentPressed,
+                        onMessageTap: _handleMessageTap,
+                        onPreviewDataFetched: _handlePreviewDataFetched,
+                        onSendPressed: _handleSendPressed,
+                        user: types.User(
+                          id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
+                        ),
+                      );
+                    },
+                  );
+                }
+                // if room suddenly does not exist, go back to roomspage
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("UPS! Dieser Raum existiert nicht mehr..."),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextButton(
+                            child: Text("hier gehts zurück"),
+                            style: TextButton.styleFrom(
+                              primary: Colors.white,
+                              onSurface: ThemeConst.lightPrimary,
+                              backgroundColor: ThemeConst.accent,
+                              padding: EdgeInsets.all(12),
+                            ),
+                            onPressed: () {
+                              try {
+                                Get.to(() => RoomsPage());
+                              } catch (_) {}
+                            }),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 );
               },
             )

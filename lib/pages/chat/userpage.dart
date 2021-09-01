@@ -1,25 +1,79 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elsab/components/class_user.dart';
+import 'package:elsab/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'chat.dart';
 
-class UsersPage extends StatelessWidget {
+class UsersPage extends StatefulWidget {
   const UsersPage({Key? key}) : super(key: key);
 
-  void _handlePressed(types.User otherUser, BuildContext context) async {
-    final room = await FirebaseChatCore.instance
-        .createRoom(otherUser, metadata: {'lastMessageFrom': otherUser.id});
+  @override
+  State<UsersPage> createState() => _UsersPageState();
+}
 
-    Navigator.of(context).pop();
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ChatPage(
-          room: room,
-          isUserRoom: true,
-        ),
-      ),
-    );
+class _UsersPageState extends State<UsersPage> {
+  bool _isChoosing = false;
+  UserClass user = UserClass();
+  List<types.User> chosenUsers = [];
+
+  void _handlePressed(
+      List<types.User> otherUsers, BuildContext context, bool isShowDialog,
+      {imageURL = "", roomName = "", metadata}) async {
+    TextEditingController _textFieldController = TextEditingController();
+    types.Room room;
+
+    if (isShowDialog && otherUsers.length > 1)
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Wie möchtest du diese Gruppe benennen?'),
+              content: TextField(
+                controller: _textFieldController,
+                textInputAction: TextInputAction.go,
+                keyboardType: TextInputType.numberWithOptions(),
+                decoration: InputDecoration(hintText: "Name eingeben"),
+              ),
+              actions: <Widget>[
+                new TextButton(
+                  child: new Text('Abbrechen'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                new TextButton(
+                  child: new Text('Erstellen'),
+                  onPressed: () async {
+                    roomName = _textFieldController.value.text.toString();
+                    Get.back();
+
+                    room = await ChatConst.createGroupUserRoom(otherUsers,
+                          imageURL: imageURL,
+                          roomName: roomName,
+                          metadata: metadata);
+
+                    Get.off(
+                      () => ChatPage(
+                        room: room,
+                        isUserRoom: true,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          });
+    else {
+      room = await ChatConst.createSingleUserRoom(otherUsers[0]);
+      Get.off(() => ChatPage(
+        room: room,
+        isUserRoom: true,
+      ));
+    }
   }
 
   String getUserName(types.User user) =>
@@ -36,9 +90,9 @@ class UsersPage extends StatelessWidget {
       radius: 20,
       child: !hasImage
           ? Text(
-        name.isEmpty ? user.lastName.toString() : name[0].toUpperCase(),
-        style: const TextStyle(color: Colors.white),
-      )
+              name.isEmpty ? user.lastName.toString() : name[0].toUpperCase(),
+              style: const TextStyle(color: Colors.white),
+            )
           : null,
     );
   }
@@ -46,7 +100,6 @@ class UsersPage extends StatelessWidget {
   Color getOnlineStatus(types.User user) {
     Color statusColor = Colors.red;
     int status = user.metadata?["status"] ?? 0;
-    print(user.metadata?["status"].toString());
 
     if (status == 2) {
       statusColor = Colors.orange;
@@ -57,12 +110,34 @@ class UsersPage extends StatelessWidget {
     return statusColor;
   }
 
+  void cancelGroup() {
+    setState(() {
+      _isChoosing = !_isChoosing;
+      chosenUsers = [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
         title: const Text('Users'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: Center(
+              child: TextButton(
+                  child: Text(_isChoosing ? "Abbrechen" : "Gruppe erstellen",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        letterSpacing: 1.5,
+                      )),
+                  onPressed: () => cancelGroup()),
+            ),
+          )
+        ],
       ),
       body: Container(
         color: Colors.blueGrey,
@@ -80,59 +155,116 @@ class UsersPage extends StatelessWidget {
               );
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final user = snapshot.data![index];
-
-                return GestureDetector(
-                  onTap: () {
-                    _handlePressed(user, context);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                    margin: const EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                        color: Colors.white,
-                        spreadRadius: 1,
-                        blurRadius: 1,
-                        offset: Offset(0, 3), // changes position of shadow
-                      )
-                    ], borderRadius: BorderRadius.horizontal(right: Radius.circular(10))),
-                    child: ListTile(
-                      leading: Container(
-                        width: 50,
+            return Column(
+              children: [
+                _isChoosing
+                    ? Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(top: 20),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildAvatar(user),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(top:10),
-                                  height: 8,
-                                  width: 8,
-                                  decoration: BoxDecoration(
-                                    color: getOnlineStatus(user),
-                                    borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            TextButton(
+                                onPressed: () => {
+                                      if (chosenUsers.isNotEmpty)
+                                        _handlePressed(
+                                            chosenUsers, context, true)
+                                    },
+                                child: Text("Auswahl akzeptieren",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      letterSpacing: 1.5,
+                                    )),
+                                style: TextButton.styleFrom(
+                                  primary: Colors.lightBlue,
+                                  onSurface: Colors.blue,
+                                  backgroundColor: ThemeConst.accent,
+                                  padding: EdgeInsets.all(12),
+                                ))
                           ],
                         ),
-                      ),
-                      title: Text(getUserName(user)),
+                      )
+                    : Text(""),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final user = snapshot.data![index];
+
+                      return GestureDetector(
+                        onLongPress: () => {
+                          setState(() => {_isChoosing = true})
+                        },
+                        onTap: () {
+                          if (!_isChoosing) {
+                            print("inside");
+                            _handlePressed([user], context, false);
+                          } else {
+                            setState(() {
+                              chosenUsers.contains(user)
+                                  ? chosenUsers.remove(user)
+                                  : chosenUsers.add(user);
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 0),
+                          margin: const EdgeInsets.only(top: 10),
+                          decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white,
+                                  spreadRadius: 1,
+                                  blurRadius: 1,
+                                  offset: Offset(
+                                      0, 3), // changes position of shadow
+                                )
+                              ],
+                              borderRadius: BorderRadius.horizontal(
+                                  right: Radius.circular(10))),
+                          child: ListTile(
+                            leading: Container(
+                              width: 50,
+                              child: Row(
+                                children: [
+                                  _buildAvatar(user),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.only(top: 10),
+                                        height: 8,
+                                        width: 8,
+                                        decoration: BoxDecoration(
+                                          color: getOnlineStatus(user),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            title: Text(getUserName(user)),
+                            trailing: _isChoosing
+                                ? (Icon(chosenUsers.contains(user)
+                                    ? Icons.check_box_outlined
+                                    : Icons.check_box_outline_blank))
+                                : Text(""),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+              ],
             );
           },
         ),

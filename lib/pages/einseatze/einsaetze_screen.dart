@@ -20,13 +20,15 @@ class EinsatzlisteScreen extends StatelessWidget {
                   builder: (controller) {
                     Timer(Duration(seconds: 5), () {});
                     return Container(
+                      padding: EdgeInsets.all(4.0),
                       child: ListView(
                         children: List.generate(
                           controller.einsatzlist.length,
                           (index) {
                             return Container(
                               //margin: const EdgeInsets.fromLTRB(1, 2, 1, 2),
-                              padding: const EdgeInsets.all(2.0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 2.0, vertical: 1.0),
 
                               child: InkWell(
                                 onTap: () {
@@ -41,7 +43,6 @@ class EinsatzlisteScreen extends StatelessWidget {
                                           data: controller.einsatzlist[index])),
                                 ),
                               ),
-
                             );
                           },
                         ),
@@ -51,8 +52,7 @@ class EinsatzlisteScreen extends StatelessWidget {
                           BoxShadow(
                             color: Colors.black.withOpacity(0.8),
                             spreadRadius: 0.1,
-                            blurRadius: 0.1,
-                            offset: Offset(0, 1), // changes position of shadow
+                            blurRadius: 0.1, // changes position of shadow
                           ),
                         ],
                       ),

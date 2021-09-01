@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elsab/constants/app_constants.dart';
 import 'package:elsab/pages/chat/chat.dart';
 import 'package:elsab/pages/login/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,7 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:elsab/widgets/flutter_map.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'dart:async';
 import 'dart:convert';
 import 'package:get/get.dart';
@@ -114,7 +116,7 @@ class EinsatzDetailScreen extends StatelessWidget {
   }
 
   void setEinsatzRoom(context) async {
-    String? user =  FirebaseAuth.instance.currentUser?.uid;
+    String? user = FirebaseAuth.instance.currentUser?.uid;
 
     //looking for existing room
     final roomDocument = await FirebaseFirestore.instance
@@ -126,16 +128,8 @@ class EinsatzDetailScreen extends StatelessWidget {
     // if user not already joined => user joins the room
     // finally, send user to chat room
     if (roomDocument.docs.isNotEmpty) {
-      print(roomDocument.docs.first["userIds"].contains(user));
-      if(!roomDocument.docs.first["userIds"].contains(user)) {
-        print("inside");
-        await FirebaseFirestore.instance
-            .collection("rooms")
-            .doc(roomDocument.docs.first.id)
-            .update({
-          "userIds":
-          FieldValue.arrayUnion([user])
-        });
+      if (!roomDocument.docs.first["userIds"].contains(user)) {
+        ChatConst.joinRoom(roomDocument.docs.first.id, user);
       }
       // send user to the chatroom
       final room = FirebaseChatCore.instance.rooms();
@@ -150,15 +144,8 @@ class EinsatzDetailScreen extends StatelessWidget {
       );
     } //if empty than create room and send user to room
     else if (roomDocument.docs.isEmpty) {
-      final newRoom = await FirebaseChatCore.instance.createGroupRoom(
-        metadata: data.toMap(),
-        name: data.objekt.isEmpty ? data.ort : data.objekt,
-        users: [],
-      );
-
-      FirebaseFirestore.instance.collection("rooms").doc(newRoom.id).update({
-        "userRoles.$user": "admin"
-      });
+      final newRoom = await ChatConst.createGroupUserRoom([],
+          roomName: "EinsatzRaum ${data.meldebild.isEmpty? data.einsatzID : data.meldebild}", metadata: data.toMap());
 
       Get.to(() => ChatPage(room: newRoom, isUserRoom: false));
     }
@@ -187,7 +174,7 @@ class EinsatzDetailScreen extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.navigate_next),
+            icon: const Icon(Icons.arrow_forward),
             tooltip: 'Go to the next page',
             onPressed: () {
               Navigator.push(context, MaterialPageRoute<void>(
