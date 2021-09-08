@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'account_controller.dart';
+import '../../controller/account_controller.dart';
 
 class AccountPage extends GetView<AccountController> {
   @override

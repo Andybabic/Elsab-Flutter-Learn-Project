@@ -14,8 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Get.put(AppStatusManager());
-  //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  //await GetStorage.init();
+  //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);faceb
   //User().ReadUserOnDevice();
   loginCheck();
   runApp(MyApp());

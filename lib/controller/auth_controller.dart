@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+//import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:elsab/components/class_user.dart';
 import 'user_controller.dart';
 
@@ -79,6 +79,7 @@ class FireStoreUtils {
     }
   }
 
+  /*
   static loginWithFacebook() async {
     FacebookAuth facebookAuth = FacebookAuth.instance;
     bool isLogged = await facebookAuth.accessToken != null;
@@ -126,7 +127,7 @@ class FireStoreUtils {
       }
     }
   }
-
+*/
   /// save a new user document in the USERS table in firebase firestore
   /// returns an error message on failure or null on success
   static Future<String?> firebaseCreateNewUser(UserClass user) async =>

@@ -1,12 +1,12 @@
 import 'package:elsab/constants/app_constants.dart';
-import 'package:elsab/pages/chat/rooms.dart';
+import 'package:elsab/pages/chat/rooms_overview_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:elsab/pages/account/account_page.dart';
-import 'package:elsab/pages/alerts/alerts_page.dart';
-import 'package:elsab/pages/home/home_page.dart';
-import 'dashboard_controller.dart';
+import 'package:elsab/pages/account/account_screen.dart';
+import 'package:elsab/pages/alerts/alerts_screen.dart';
+import 'package:elsab/pages/home/home_screen.dart';
+import '../../controller/dashboard_controller.dart';
 import 'package:elsab/components/menu.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -47,6 +47,7 @@ class DashboardPage extends StatelessWidget {
             selectedItemColor: ThemeConst.accent,
             onTap: controller.changeTabIndex,
             currentIndex: controller.tabIndex,
+            unselectedFontSize: 0.0,
             showSelectedLabels: false,
             showUnselectedLabels: false,
             type: BottomNavigationBarType.fixed,

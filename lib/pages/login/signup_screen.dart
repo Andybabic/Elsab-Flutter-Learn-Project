@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:elsab/components/class_user.dart';
-import 'auth_controller.dart';
-import 'user_controller.dart';
+import '../../controller/auth_controller.dart';
+import '../../controller/user_controller.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:elsab/constants/app_constants.dart';
 

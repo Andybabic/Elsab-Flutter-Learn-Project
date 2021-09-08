@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:elsab/components/class_user.dart';
-import 'auth_controller.dart';
-import 'user_controller.dart';
+import '../../controller/auth_controller.dart';
+import '../../controller/user_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -134,6 +134,7 @@ class _LoginScreen extends State<LoginScreen> {
                 ),
               ),
             ),
+            /* FB LOGIN
             Padding(
               padding:
                   const EdgeInsets.only(right: 40.0, left: 40.0, bottom: 20),
@@ -170,6 +171,7 @@ class _LoginScreen extends State<LoginScreen> {
                 ),
               ),
             ),
+             */
           ],
         ),
       ),
@@ -202,7 +204,7 @@ class _LoginScreen extends State<LoginScreen> {
           context, 'Couldn\'t Authenticate', 'Login failed, Please try again.');
     }
   }
-
+/*
   loginWithFacebook() async {
     try {
       await showProgress(context, 'Logging in, Please wait...', false);
@@ -221,4 +223,6 @@ class _LoginScreen extends State<LoginScreen> {
       showAlertDialog(context, 'Error', 'Couldn\'t login with facebook.');
     }
   }
+
+ */
 }

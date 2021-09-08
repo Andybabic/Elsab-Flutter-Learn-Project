@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart';
-import 'package:elsab/pages/chat/chat.dart';
+import 'package:elsab/pages/chat/chat_screen.dart';
+import 'package:elsab/pages/dashboard/dashboard_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
@@ -11,6 +12,18 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class UserConst {
   static var currentUser;
+
+  static void logout() async {
+    await FirebaseAuth.instance.signOut();
+    Get.offAll(()=>{DashboardPage()});
+    /*
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => DashboardPage()),
+          (route) => false,
+    );
+     */
+  }
 }
 
 getData(value) {
@@ -56,7 +69,7 @@ class ThemeConst {
       textTheme: TextTheme(
           headline6: TextStyle(
         color: lightPrimary,
-        fontSize: 30,
+        fontSize: 23,
         fontWeight: FontWeight.w100,
       )),
       color: accent,
@@ -87,7 +100,7 @@ class ThemeConst {
         textTheme: TextTheme(
             headline6: TextStyle(
           color: dark,
-          fontSize: 30,
+          fontSize: 23,
           fontWeight: FontWeight.w100,
         )),
         color: dark,
@@ -105,6 +118,31 @@ class ThemeConst {
 
 class ChatConst {
   static getRoom(UserClass user, [Map<String, dynamic>? metadata]) {}
+
+  static Future<DocumentSnapshot<Map<String, dynamic>>> getOtherRoomUsers(
+      types.Room room) async {
+    var otherUser;
+
+    if (room.type == types.RoomType.direct ||
+        room.type == types.RoomType.group) {
+      try {
+        otherUser = room.users.firstWhere(
+              (u) => u.id != UserConst.currentUser!.uid,
+        );
+      } catch (e) {
+        otherUser = null;
+        // Do nothing if other user is not found
+      }
+    }
+
+    DocumentSnapshot<Map<String, dynamic>> response = await FirebaseFirestore
+        .instance
+        .collection("users")
+        .doc(otherUser.id)
+        .get();
+
+    return response;
+  }
 
   static Future<types.Room> createSingleUserRoom(types.User otherUser) async {
     final room = await FirebaseChatCore.instance

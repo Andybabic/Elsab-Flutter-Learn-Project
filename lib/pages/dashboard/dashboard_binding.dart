@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:elsab/pages/account/account_controller.dart';
-import 'package:elsab/pages/home/home_controller.dart';
-import 'dashboard_controller.dart';
+import 'package:elsab/controller/account_controller.dart';
+import 'package:elsab/controller/home_controller.dart';
+import '../../controller/dashboard_controller.dart';
 
 
 class DashboardBinding extends Bindings {

@@ -1,12 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_einsatz.dart';
-import 'package:elsab/components/class_user.dart';
 import 'package:elsab/constants/app_constants.dart';
-import 'package:elsab/pages/chat/rooms.dart';
+import 'package:elsab/pages/chat/rooms_overview_screen.dart';
 import 'package:elsab/pages/einseatze/einsatz_details_screen.dart';
-import 'package:elsab/pages/home/home_page.dart';
-import 'package:elsab/routes/app_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -208,9 +205,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handlePreviewDataFetched(
-    types.TextMessage message,
-    types.PreviewData previewData,
-  ) {
+      types.TextMessage message,
+      types.PreviewData previewData,
+      ) {
     final updatedMessage = message.copyWith(previewData: previewData);
 
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
@@ -256,7 +253,7 @@ class _ChatPageState extends State<ChatPage> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => RoomsPage()),
-          (route) => false,
+              (route) => false,
         );
       },
     );
@@ -287,7 +284,7 @@ class _ChatPageState extends State<ChatPage> {
         .where("einsatzID", isEqualTo: widget.room.metadata?["einsatzID"])
         .get()
         .then((value) => Get.to(() =>
-            EinsatzDetailScreen(Einsaetze.fromJson(value.docs.first.data()))));
+        EinsatzDetailScreen(Einsaetze.fromJson(value.docs.first.data()))));
   }
 
   @override
@@ -317,92 +314,92 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: _refreshAllowed
           ? StreamBuilder<types.Room>(
-              initialData: widget.room,
-              stream: FirebaseChatCore.instance.room(widget.room.id),
+        initialData: widget.room,
+        stream: FirebaseChatCore.instance.room(widget.room.id),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.waiting) {
+            print("hmm");
+          } else if (snapshot.hasData) {
+            return StreamBuilder<List<types.Message>>(
+              initialData: const [],
+              stream: FirebaseChatCore.instance.messages(snapshot.data!),
               builder: (context, snapshot) {
-                if (!snapshot.hasData &&
-                    snapshot.connectionState == ConnectionState.waiting) {
-                  print("hmm");
-                } else if (snapshot.hasData) {
-                  return StreamBuilder<List<types.Message>>(
-                    initialData: const [],
-                    stream: FirebaseChatCore.instance.messages(snapshot.data!),
-                    builder: (context, snapshot) {
-                      return Chat(
-                        // theme: MyChatTheme(
-                        //   attachmentButtonIcon: Icon(Icons.attach_file),
-                        //   backgroundColor: Colors.blueGrey,
-                        //   dateDividerTextStyle: TextStyle(color:Colors.white),
-                        //   deliveredIcon: Icon(Icons.message),
-                        //   documentIcon: Icon(Icons.wallpaper),
-                        //   emptyChatPlaceholderTextStyle: TextStyle(color: Colors.orange),
-                        //   errorColor: Colors.red,
-                        //   errorIcon: Icon(Icons.error),
-                        //   inputBackgroundColor: Colors.black26,
-                        //   inputBorderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        //   inputTextStyle: TextStyle(),
-                        //   inputTextColor: Colors.white,
-                        //   messageBorderRadius: 10.0,
-                        //   primaryColor: Colors.white,
-                        //   receivedMessageBodyTextStyle: TextStyle(),
-                        //   receivedMessageCaptionTextStyle: TextStyle(),
-                        //   receivedMessageDocumentIconColor: Colors.orangeAccent,
-                        //   receivedMessageLinkDescriptionTextStyle: TextStyle(),
-                        //   receivedMessageLinkTitleTextStyle: TextStyle(),
-                        //   secondaryColor: Colors.blueGrey,
-                        //   seenIcon: Icon(Icons.air),
-                        //   sendButtonIcon: Icon(Icons.arrow_forward),
-                        //   sentMessageBodyTextStyle: TextStyle(),
-                        //   sentMessageCaptionTextStyle: TextStyle(),
-                        //   sentMessageDocumentIconColor: Colors.orangeAccent,
-                        //   sentMessageLinkDescriptionTextStyle: TextStyle(),
-                        //   sentMessageLinkTitleTextStyle: TextStyle(),
-                        //   userAvatarNameColors: [Colors.blue, Colors.yellow, Colors.green],
-                        //   userAvatarTextStyle: TextStyle(),
-                        //   userNameTextStyle: TextStyle(),
-                        //   sendingIcon: null,
-                        // ),
-                        showUserNames: true,
-                        isAttachmentUploading: _isAttachmentUploading,
-                        messages: snapshot.data ?? [],
-                        onAttachmentPressed: _handleAtachmentPressed,
-                        onMessageTap: _handleMessageTap,
-                        onPreviewDataFetched: _handlePreviewDataFetched,
-                        onSendPressed: _handleSendPressed,
-                        user: types.User(
-                          id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
-                        ),
-                      );
-                    },
-                  );
-                }
-                // if room suddenly does not exist, go back to roomspage
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("UPS! Dieser Raum existiert nicht mehr..."),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextButton(
-                            child: Text("hier gehts zurück"),
-                            style: TextButton.styleFrom(
-                              primary: Colors.white,
-                              onSurface: ThemeConst.lightPrimary,
-                              backgroundColor: ThemeConst.accent,
-                              padding: EdgeInsets.all(12),
-                            ),
-                            onPressed: () {
-                              try {
-                                Get.to(() => RoomsPage());
-                              } catch (_) {}
-                            }),
-                      ),
-                    ],
+                return Chat(
+                  // theme: MyChatTheme(
+                  //   attachmentButtonIcon: Icon(Icons.attach_file),
+                  //   backgroundColor: Colors.blueGrey,
+                  //   dateDividerTextStyle: TextStyle(color:Colors.white),
+                  //   deliveredIcon: Icon(Icons.message),
+                  //   documentIcon: Icon(Icons.wallpaper),
+                  //   emptyChatPlaceholderTextStyle: TextStyle(color: Colors.orange),
+                  //   errorColor: Colors.red,
+                  //   errorIcon: Icon(Icons.error),
+                  //   inputBackgroundColor: Colors.black26,
+                  //   inputBorderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  //   inputTextStyle: TextStyle(),
+                  //   inputTextColor: Colors.white,
+                  //   messageBorderRadius: 10.0,
+                  //   primaryColor: Colors.white,
+                  //   receivedMessageBodyTextStyle: TextStyle(),
+                  //   receivedMessageCaptionTextStyle: TextStyle(),
+                  //   receivedMessageDocumentIconColor: Colors.orangeAccent,
+                  //   receivedMessageLinkDescriptionTextStyle: TextStyle(),
+                  //   receivedMessageLinkTitleTextStyle: TextStyle(),
+                  //   secondaryColor: Colors.blueGrey,
+                  //   seenIcon: Icon(Icons.air),
+                  //   sendButtonIcon: Icon(Icons.arrow_forward),
+                  //   sentMessageBodyTextStyle: TextStyle(),
+                  //   sentMessageCaptionTextStyle: TextStyle(),
+                  //   sentMessageDocumentIconColor: Colors.orangeAccent,
+                  //   sentMessageLinkDescriptionTextStyle: TextStyle(),
+                  //   sentMessageLinkTitleTextStyle: TextStyle(),
+                  //   userAvatarNameColors: [Colors.blue, Colors.yellow, Colors.green],
+                  //   userAvatarTextStyle: TextStyle(),
+                  //   userNameTextStyle: TextStyle(),
+                  //   sendingIcon: null,
+                  // ),
+                  showUserNames: true,
+                  isAttachmentUploading: _isAttachmentUploading,
+                  messages: snapshot.data ?? [],
+                  onAttachmentPressed: _handleAtachmentPressed,
+                  onMessageTap: _handleMessageTap,
+                  onPreviewDataFetched: _handlePreviewDataFetched,
+                  onSendPressed: _handleSendPressed,
+                  user: types.User(
+                    id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
                   ),
                 );
               },
-            )
+            );
+          }
+          // if room suddenly does not exist, go back to roomspage
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("UPS! Dieser Raum existiert nicht mehr..."),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                      child: Text("hier gehts zurück"),
+                      style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        onSurface: ThemeConst.lightPrimary,
+                        backgroundColor: ThemeConst.accent,
+                        padding: EdgeInsets.all(12),
+                      ),
+                      onPressed: () {
+                        try {
+                          Get.to(() => RoomsPage());
+                        } catch (_) {}
+                      }),
+                ),
+              ],
+            ),
+          );
+        },
+      )
           : Center(child: CircularProgressIndicator()),
     );
   }

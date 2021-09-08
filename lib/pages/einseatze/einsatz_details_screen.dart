@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/constants/app_constants.dart';
-import 'package:elsab/pages/chat/chat.dart';
 import 'package:elsab/pages/login/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,11 +7,8 @@ import 'package:elsab/components/class_einsatz.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:elsab/widgets/flutter_map.dart';
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'dart:async';
 import 'dart:convert';
-import 'package:get/get.dart';
 
 class EinsatzDetailScreen extends StatelessWidget {
   final Einsaetze data;

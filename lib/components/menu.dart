@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:elsab/pages/login/auth_screen.dart';
-import 'package:elsab/pages/chat/rooms.dart';
+import 'package:elsab/pages/chat/rooms_overview_screen.dart';
 import 'package:elsab/constants/app_constants.dart';
 import 'package:get_storage/get_storage.dart';
 

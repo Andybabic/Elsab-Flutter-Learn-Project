@@ -32,12 +32,15 @@ class AppStatusManager extends SuperController {
   void setStatus(int index) async {
     appStatus = index;
 
-    User user = FirebaseAuth.instance.currentUser!;
-    DocumentReference userDoc =
-        FirebaseFirestore.instance.collection("users").doc(user.uid);
+    try {
+      User user = FirebaseAuth.instance.currentUser!;
+      DocumentReference userDoc =
+      FirebaseFirestore.instance.collection("users").doc(user.uid);
 
-    userDoc.update({
-      "metadata": {"status": index}
-    });
+      userDoc.update({
+        "metadata": {"status": index}
+      });
+    }
+    catch(_){}
   }
 }

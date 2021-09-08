@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart';
 import 'package:elsab/constants/app_constants.dart';
-import 'package:elsab/pages/dashboard/dashboard_page.dart';
 import 'package:elsab/pages/einseatze/einsaetze_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
-import 'chat.dart';
-import 'userpage.dart';
+import 'chat_screen.dart';
+import 'users_choosing_screen.dart';
 import 'package:elsab/pages/login/login_screen.dart';
 
 class RoomsPage extends StatefulWidget {
@@ -22,7 +21,8 @@ class RoomsPage extends StatefulWidget {
 class _RoomsPageState extends State<RoomsPage> {
   bool _error = false;
   bool _initialized = false;
-  bool _showUserRooms = false;
+  bool _showUserRooms = true;
+  int _currentIndex = 0;
   User? _user;
 
   @override
@@ -47,40 +47,6 @@ class _RoomsPageState extends State<RoomsPage> {
         _error = true;
       });
     }
-  }
-
-  void logout() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => DashboardPage()),
-          (route) => false,
-    );
-  }
-
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUser(
-      types.Room room) async {
-    var otherUser;
-
-    if (room.type == types.RoomType.direct ||
-        room.type == types.RoomType.group) {
-      try {
-        otherUser = room.users.firstWhere(
-              (u) => u.id != _user!.uid,
-        );
-      } catch (e) {
-        otherUser = null;
-        // Do nothing if other user is not found
-      }
-    }
-
-    DocumentSnapshot<Map<String, dynamic>> response = await FirebaseFirestore
-        .instance
-        .collection("users")
-        .doc(otherUser.id)
-        .get();
-
-    return response;
   }
 
   Widget _buildRoomAvatar(types.Room room, UserClass roomUser) {
@@ -142,74 +108,91 @@ class _RoomsPageState extends State<RoomsPage> {
     }
 
     return DefaultTabController(
-      initialIndex: 1,
+      initialIndex: 0,
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: TabBar(
-            tabs: <Widget>[
-              Tab(
-                //     splashColor: Colors.blue,
-                // highlightColor: Colors.grey,
-                icon: Icon(Icons.messenger),
-              ),
-              Tab(
-                icon: Icon(Icons.group),
-              ),
-            ],
-            onTap: (int index) {
-              setState(() {
-                _showUserRooms = (index == 0 ? true : false);
-              });
-            },
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _user == null
-              ? null
-              : () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  fullscreenDialog: true,
-                  builder: (context) {
-                    return _showUserRooms
-                        ? const UsersPage()
-                        : EinsatzlisteScreen(isChoosing: true);
-                  }),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-        body: _user == null
-            ? Container(
-          alignment: Alignment.center,
-          margin: const EdgeInsets.only(
-            bottom: 200,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Not authenticated'),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (context) => LoginScreen(),
-                    ),
-                  );
+      child: Builder(
+        builder: (BuildContext context) {
+          final TabController tabController = DefaultTabController.of(context)!;
+          tabController.animation!.addListener(() {
+            // check if tabcontroller swipe-animation is finished
+            // get index and save as currentIndex
+            int value = tabController.animation!.value.round();
+            if (value != _currentIndex) {
+                setState((){
+                  _currentIndex = value;
+                  _currentIndex == 0? _showUserRooms = true : _showUserRooms = false;
+                });
+            }
+          });
+
+          return Scaffold(
+            appBar: AppBar(
+              title: TabBar(
+                tabs: <Widget>[
+                  Tab(
+                    //     splashColor: Colors.blue,
+                    // highlightColor: Colors.grey,
+                    icon: Icon(Icons.messenger),
+                  ),
+                  Tab(
+                    icon: Icon(Icons.group),
+                  ),
+                ],
+                onTap: (int index) {
+                  setState(() {
+                    _showUserRooms = (index == 0 ? true : false);
+                  });
                 },
-                child: const Text('Login'),
               ),
-            ],
-          ),
-        )
-            : TabBarView(
-          children: <Widget>[
-            Center(child: getList()),
-            Center(child: getList())
-          ],
-        ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: _user == null
+                  ? null
+                  : () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) {
+                        return _currentIndex == 1
+                            ? const UsersPage()
+                            : EinsatzlisteScreen(isChoosing: true);
+                      }),
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
+            body: _user == null
+                ? Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(
+                bottom: 200,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Not authenticated'),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (context) => LoginScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('Login'),
+                  ),
+                ],
+              ),
+            )
+                : TabBarView(
+              children: <Widget>[
+                Center(child: getList()),
+                Center(child: getList())
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -217,7 +200,7 @@ class _RoomsPageState extends State<RoomsPage> {
   FutureBuilder<DocumentSnapshot<Map<String, dynamic>>> getListElement(
       types.Room room) {
     return FutureBuilder(
-        future: getUser(room),
+        future: ChatConst.getOtherRoomUsers(room),
         builder: (context, AsyncSnapshot snapshot) {
           UserClass roomUser = UserClass();
           //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);

@@ -1,6 +1,6 @@
 import 'package:elsab/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'user_controller.dart';
+import '../../controller/user_controller.dart';
 import 'login_screen.dart';
 import 'signup_screen.dart';
 
