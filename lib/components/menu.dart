@@ -65,7 +65,7 @@ Drawer menu(BuildContext context) {
         ListTile(
           title: Text('Chat'),
           onTap: () {
-            Get.to(() => RoomsPage());
+            Get.to(() => RoomsScreen());
           },
         ),
       ],

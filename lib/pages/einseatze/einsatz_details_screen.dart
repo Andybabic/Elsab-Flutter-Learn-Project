@@ -18,6 +18,29 @@ class EinsatzDetailScreen extends StatelessWidget {
 
   EinsatzDetailScreen(this.data);
 
+  Widget getEinsatzDetails(){
+    return Container(
+      //margin: EdgeInsets.all(5),
+      //padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
+      padding: EdgeInsets.all(30),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(5))),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          getDetailRow("ALARMSTUFE", data.alarmstufe),
+          getDetailRow("BEMERKUNG", data.bemerkung),
+          getDetailRow("DATUM", data.einsatzErzeugt),
+          getDetailRow("MELDEBILD", data.meldebild),
+          getDetailRow("MELDER", data.melder),
+          getDetailRow("ORT", data.ort),
+          getDetailRow("OBJEKT", data.objekt),
+        ],
+      ),
+    );
+  }
+
   // return one Detail - Row
   Widget getDetailRow(String fieldname, String value) {
     return Column(
@@ -161,26 +184,7 @@ class EinsatzDetailScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: Container(
-                  //margin: EdgeInsets.all(5),
-                  //padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-                  padding: EdgeInsets.all(30),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(5))),
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      getDetailRow("ALARMSTUFE", data.alarmstufe),
-                      getDetailRow("BEMERKUNG", data.bemerkung),
-                      getDetailRow("DATUM", data.einsatzErzeugt),
-                      getDetailRow("MELDEBILD", data.meldebild),
-                      getDetailRow("MELDER", data.melder),
-                      getDetailRow("ORT", data.ort),
-                      getDetailRow("OBJEKT", data.objekt),
-                    ],
-                  ),
-                ),
+                child: getEinsatzDetails(),
               ),
               Container(
                 height: 250,

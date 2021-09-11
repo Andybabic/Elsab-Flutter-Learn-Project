@@ -34,7 +34,7 @@ class _UsersPageState extends State<UsersPage> {
               content: TextField(
                 controller: _textFieldController,
                 textInputAction: TextInputAction.go,
-                keyboardType: TextInputType.numberWithOptions(),
+                keyboardType: TextInputType.text,
                 decoration: InputDecoration(hintText: "Name eingeben"),
               ),
               actions: <Widget>[
@@ -56,7 +56,7 @@ class _UsersPageState extends State<UsersPage> {
                           metadata: metadata);
 
                     Get.off(
-                      () => ChatPage(
+                      () => ChatScreen(
                         room: room,
                         isUserRoom: true,
                       ),
@@ -68,7 +68,7 @@ class _UsersPageState extends State<UsersPage> {
           });
     else {
       room = await ChatConst.createSingleUserRoom(otherUsers[0]);
-      Get.off(() => ChatPage(
+      Get.off(() => ChatScreen(
         room: room,
         isUserRoom: true,
       ));
@@ -198,7 +198,6 @@ class _UsersPageState extends State<UsersPage> {
                         },
                         onTap: () {
                           if (!_isChoosing) {
-                            print("inside");
                             _handlePressed([user], context, false);
                           } else {
                             setState(() {

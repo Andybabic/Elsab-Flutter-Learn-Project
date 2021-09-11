@@ -35,7 +35,7 @@ class DashboardPage extends StatelessWidget {
               index: controller.tabIndex,
               children: [
                 HomePage(),
-                RoomsPage(),
+                RoomsScreen(),
                 AlertsPage(),
                 AccountPage(),
               ],

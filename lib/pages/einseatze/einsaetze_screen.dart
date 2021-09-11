@@ -8,9 +8,9 @@ import 'dart:async';
 
 class EinsatzlisteScreen extends StatelessWidget {
   final EinsatzController einsatz = Get.put(EinsatzController());
-  bool isChoosing;
+  bool isCreatingRoom;
 
-  EinsatzlisteScreen({this.isChoosing = false});
+  EinsatzlisteScreen({this.isCreatingRoom = false});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class EinsatzlisteScreen extends StatelessWidget {
 
                               child: InkWell(
                                 onTap: () {
-                                  if(!this.isChoosing)
+                                  if(!this.isCreatingRoom)
                                     Get.to(() => EinsatzDetailScreen(
                                         controller.einsatzlist[index]));
                                   else {

@@ -19,8 +19,8 @@ import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({
     Key? key,
     required this.room,
     required this.isUserRoom,
@@ -30,10 +30,10 @@ class ChatPage extends StatefulWidget {
   final bool isUserRoom;
 
   @override
-  _ChatPageState createState() => _ChatPageState();
+  _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatScreenState extends State<ChatScreen> {
   bool _isAttachmentUploading = false;
   bool _isRoomAdmin = false;
   bool _isEinsatzRoom = false;
@@ -252,7 +252,7 @@ class _ChatPageState extends State<ChatPage> {
         });
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => RoomsPage()),
+          MaterialPageRoute(builder: (context) => RoomsScreen()),
               (route) => false,
         );
       },
@@ -319,7 +319,7 @@ class _ChatPageState extends State<ChatPage> {
         builder: (context, snapshot) {
           if (!snapshot.hasData &&
               snapshot.connectionState == ConnectionState.waiting) {
-            print("hmm");
+            return Center(child:Text("Es konnten keine Daten geladen werden!"));
           } else if (snapshot.hasData) {
             return StreamBuilder<List<types.Message>>(
               initialData: const [],
@@ -391,7 +391,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       onPressed: () {
                         try {
-                          Get.to(() => RoomsPage());
+                          Get.to(() => RoomsScreen());
                         } catch (_) {}
                       }),
                 ),

@@ -190,7 +190,7 @@ class ChatConst {
         (value) {
           for (var i = 0; i < value.length; i++) {
             if (value[i].id == roomDocument.docs.first.id) {
-              Get.to(() => ChatPage(room: value[i], isUserRoom: false));
+              Get.to(() => ChatScreen(room: value[i], isUserRoom: false));
             }
           }
         },
@@ -202,7 +202,7 @@ class ChatConst {
               "EinsatzRaum ${roomData.einsatzID}:\n${roomData.objekt.isEmpty ? roomData.meldebild : roomData.objekt}",
           metadata: roomData.toMap());
 
-      Get.to(() => ChatPage(room: newRoom, isUserRoom: false));
+      Get.to(() => ChatScreen(room: newRoom, isUserRoom: false));
     }
   }
 
@@ -211,8 +211,6 @@ class ChatConst {
 
     var room =
         await FirebaseFirestore.instance.collection("rooms").doc(roomID).get();
-
-    print(FirebaseAuth.instance.currentUser?.uid);
 
     await room["userRoles"]?.forEach((key, val) {
       if (val != null &&

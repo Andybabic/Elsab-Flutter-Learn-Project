@@ -11,14 +11,14 @@ import 'chat_screen.dart';
 import 'users_choosing_screen.dart';
 import 'package:elsab/pages/login/login_screen.dart';
 
-class RoomsPage extends StatefulWidget {
-  const RoomsPage({Key? key}) : super(key: key);
+class RoomsScreen extends StatefulWidget {
+  const RoomsScreen({Key? key}) : super(key: key);
 
   @override
-  _RoomsPageState createState() => _RoomsPageState();
+  _RoomsScreenState createState() => _RoomsScreenState();
 }
 
-class _RoomsPageState extends State<RoomsPage> {
+class _RoomsScreenState extends State<RoomsScreen> {
   bool _error = false;
   bool _initialized = false;
   bool _showUserRooms = true;
@@ -153,9 +153,9 @@ class _RoomsPageState extends State<RoomsPage> {
                   MaterialPageRoute(
                       fullscreenDialog: true,
                       builder: (context) {
-                        return _currentIndex == 1
+                        return _currentIndex == 0
                             ? const UsersPage()
-                            : EinsatzlisteScreen(isChoosing: true);
+                            : EinsatzlisteScreen(isCreatingRoom: true);
                       }),
                 );
               },
@@ -213,7 +213,7 @@ class _RoomsPageState extends State<RoomsPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) =>
-                      ChatPage(
+                      ChatScreen(
                         room: room,
                         isUserRoom: _showUserRooms,
                       ),

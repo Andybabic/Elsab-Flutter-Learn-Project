@@ -50,15 +50,17 @@ class _SignUpState extends State<SignUpScreen> {
   }
 
   Future<void> retrieveLostData() async {
-    final LostData? response = (await _imagePicker.retrieveLostData()) as LostData?;
-    if (response == null) {
-      return;
-    }
-    if (response.file != null) {
-      setState(() {
-        _image = File(response.file!.path);
-      });
-    }
+    try {
+      final LostDataResponse? response = await _imagePicker.retrieveLostData();
+      if (response == null) {
+        return;
+      }
+      if (response.file != null) {
+        setState(() {
+          _image = File(response.file!.path);
+        });
+      }
+    } on Exception catch (e) {}
   }
 
   _onCameraClick() {
