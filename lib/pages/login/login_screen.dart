@@ -191,9 +191,13 @@ class _LoginScreen extends State<LoginScreen> {
 
   _loginWithEmailAndPassword() async {
     await showProgress(context, 'Logging in, please wait...', false);
+
     dynamic result = await FireStoreUtils.loginWithEmailAndPassword(
-        email!.trim(), password!.trim());
+        email!.trim(), password!.trim()
+    );
+
     await hideProgress();
+
     if (result != null && result is UserClass) {
       showAlertDialog(context, 'Login success', "Successfully logged in");
       UserConst.currentUser = result;

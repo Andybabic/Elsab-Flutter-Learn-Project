@@ -21,7 +21,7 @@ class UserClass {
         this.lastSeen = '',
       this.id = '',
       this.imageUrl = '',
-      this.metadata = const{'status':0},
+      this.metadata = const {'status':0},
       })
       : this.appIdentifier = 'Flutter Login Screen ${Platform.operatingSystem}';
 
@@ -34,7 +34,7 @@ class UserClass {
         lastName: parsedJson['lastName'] ?? '',
         id: parsedJson['id'] ?? parsedJson['userID'] ?? '',
         imageUrl: parsedJson['imageUrl'] ?? '',
-        metadata: parsedJson['metadata'] ?? const{'status':0},
+        metadata: parsedJson['metadata'] ?? {'status':0},
     );
   }
 

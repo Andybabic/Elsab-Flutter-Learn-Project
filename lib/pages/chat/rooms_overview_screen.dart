@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elsab/components/class_user.dart';
 import 'package:elsab/constants/app_constants.dart';
 import 'package:elsab/pages/einseatze/einsaetze_screen.dart';
+import 'package:elsab/widgets/user_online_status.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,20 +33,23 @@ class _RoomsScreenState extends State<RoomsScreen> {
   }
 
   void initializeFlutterFire() async {
-    try {
-      await Firebase.initializeApp();
-      FirebaseAuth.instance.authStateChanges().listen((User? user) {
-        setState(() {
-          _user = user;
+    // check if widget exists (mounted?)
+    if(this.mounted) {
+      try {
+        await Firebase.initializeApp();
+        FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          setState(() {
+            _user = user;
+          });
         });
-      });
-      setState(() {
-        _initialized = true;
-      });
-    } catch (e) {
-      setState(() {
-        _error = true;
-      });
+        setState(() {
+          _initialized = true;
+        });
+      } on Exception catch (e) {
+        setState(() {
+          _error = true;
+        });
+      }
     }
   }
 
@@ -74,16 +78,25 @@ class _RoomsScreenState extends State<RoomsScreen> {
         padding: const EdgeInsets.all(4.0),
         child: ListTile(
           visualDensity: VisualDensity(horizontal: 0, vertical: -1),
-          leading: CircleAvatar(
-            backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
-            radius: 20,
-            child: !hasImage
-                ? Text(
-              roomName.isEmpty
-                  ? roomUser.lastName
-                  : roomName[0].toUpperCase(),
-            )
-                : null,
+          leading: Container(
+            width: 50,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
+                  radius: 20,
+                  child: !hasImage
+                      ? Text(
+                    roomName.isEmpty
+                        ? roomUser.lastName
+                        : roomName[0].toUpperCase(),
+                  )
+                      : null,
+                ),
+                if(room.type == types.RoomType.direct)
+                  UserOnlineStatus(userStatus: roomUser.metadata?["status"])
+              ],
+            ),
           ),
           title: Padding(
             padding: const EdgeInsets.only(bottom:6.0),
@@ -197,10 +210,10 @@ class _RoomsScreenState extends State<RoomsScreen> {
     );
   }
 
-  FutureBuilder<DocumentSnapshot<Map<String, dynamic>>> getListElement(
+  StreamBuilder<DocumentSnapshot<Map<String, dynamic>>> getListElement(
       types.Room room) {
-    return FutureBuilder(
-        future: ChatConst.getOtherRoomUsers(room),
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: ChatConst.getOtherRoomUsers(room),
         builder: (context, AsyncSnapshot snapshot) {
           UserClass roomUser = UserClass();
           //myUser.User roomUser = myUser.User.fromJson(snapshot.data![0]);

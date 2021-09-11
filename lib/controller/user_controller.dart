@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:elsab/pages/dashboard/dashboard_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 String? validateName(String? value) {
@@ -54,6 +57,7 @@ String? validateConfirmPassword(String? password, String? confirmPassword) {
 
 //helper method to show progress
 late ProgressDialog progressDialog;
+
 showProgress(BuildContext context, String message, bool isDismissible) async {
   progressDialog = new ProgressDialog(context,
       type: ProgressDialogType.Normal, isDismissible: isDismissible);
@@ -82,13 +86,16 @@ updateProgress(String message) {
 hideProgress() async {
   await progressDialog.hide();
 }
+
 //helper method to show alert dialog
 showAlertDialog(BuildContext context, String title, String content) {
   // set up the AlertDialog
   Widget okButton = TextButton(
     child: Text("OK"),
     onPressed: () {
-      Navigator.pop(context);
+      title == 'Login success'
+          ? Get.offAll(() => DashboardPage())
+          : Navigator.pop(context);
     },
   );
   AlertDialog alert = AlertDialog(
@@ -121,7 +128,7 @@ push(BuildContext context, Widget destination) {
 pushAndRemoveUntil(BuildContext context, Widget destination, bool predict) {
   Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => destination),
-          (Route<dynamic> route) => predict);
+      (Route<dynamic> route) => predict);
 }
 
 Widget displayCircleImage(String picUrl, double size, hasBorder) =>
@@ -135,41 +142,41 @@ Widget displayCircleImage(String picUrl, double size, hasBorder) =>
             _getPlaceholderOrErrorImage(size, hasBorder));
 
 Widget _getPlaceholderOrErrorImage(double size, hasBorder) => Container(
-  width: size,
-  height: size,
-  decoration: BoxDecoration(
-    color: const Color(0xff7c94b6),
-    borderRadius: new BorderRadius.all(new Radius.circular(size / 2)),
-    border: new Border.all(
-      color: Colors.white,
-      width: hasBorder ? 2.0 : 0.0,
-    ),
-  ),
-  child: ClipOval(
-      child: Image.asset(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: const Color(0xff7c94b6),
+        borderRadius: new BorderRadius.all(new Radius.circular(size / 2)),
+        border: new Border.all(
+          color: Colors.white,
+          width: hasBorder ? 2.0 : 0.0,
+        ),
+      ),
+      child: ClipOval(
+          child: Image.asset(
         'assets/images/placeholder.jpg',
         fit: BoxFit.cover,
         height: size,
         width: size,
       )),
-);
+    );
 
 Widget _getCircularImageProvider(
     ImageProvider provider, double size, bool hasBorder) {
   return ClipOval(
       child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-            borderRadius: new BorderRadius.all(new Radius.circular(size / 2)),
-            border: new Border.all(
-              color: Colors.white,
-              style: hasBorder ? BorderStyle.solid : BorderStyle.none,
-              width: 1.0,
-            ),
-            image: DecorationImage(
-              image: provider,
-              fit: BoxFit.cover,
-            )),
-      ));
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+        borderRadius: new BorderRadius.all(new Radius.circular(size / 2)),
+        border: new Border.all(
+          color: Colors.white,
+          style: hasBorder ? BorderStyle.solid : BorderStyle.none,
+          width: 1.0,
+        ),
+        image: DecorationImage(
+          image: provider,
+          fit: BoxFit.cover,
+        )),
+  ));
 }

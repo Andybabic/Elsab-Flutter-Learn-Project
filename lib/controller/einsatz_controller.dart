@@ -18,7 +18,7 @@ class EinsatzController extends GetxController {
   void fetchEinsaetze() async {
     List<Einsaetze> data = [];
 
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection("Einsätze")
         .orderBy("einsatzErzeugt", descending: true)
         .get()

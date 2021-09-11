@@ -1,5 +1,6 @@
 import 'package:elsab/components/class_user.dart';
 import 'package:elsab/constants/app_constants.dart';
+import 'package:elsab/widgets/user_online_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
@@ -94,19 +95,6 @@ class _UsersPageState extends State<UsersPage> {
             )
           : null,
     );
-  }
-
-  Color getOnlineStatus(types.User user) {
-    Color statusColor = Colors.red;
-    int status = user.metadata?["status"] ?? 0;
-
-    if (status == 2) {
-      statusColor = Colors.orange;
-    } else if (status == 3) {
-      statusColor = Colors.green;
-    }
-
-    return statusColor;
   }
 
   void cancelGroup() {
@@ -229,21 +217,7 @@ class _UsersPageState extends State<UsersPage> {
                               child: Row(
                                 children: [
                                   _buildAvatar(user),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        height: 8,
-                                        width: 8,
-                                        decoration: BoxDecoration(
-                                          color: getOnlineStatus(user),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10)),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  UserOnlineStatus(userStatus: user.metadata?["status"]),
                                 ],
                               ),
                             ),

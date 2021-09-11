@@ -45,6 +45,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    initData();
+  }
+
+  void initData(){
     getCurrentUser();
     getRoomRole();
     getRoomType();

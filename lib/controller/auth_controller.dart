@@ -59,7 +59,7 @@ class FireStoreUtils {
       }
       return user;
     } on auth.FirebaseAuthException catch (exception, s) {
-      print(exception.toString() + '$s');
+      //print(exception.toString() + '$s');
       switch ((exception).code) {
         case 'invalid-email':
           return 'Email address is malformed.';
@@ -74,7 +74,7 @@ class FireStoreUtils {
       }
       return 'Unexpected firebase error, Please try again.';
     } catch (e, s) {
-      print(e.toString() + '$s');
+      //print(e.toString() + '$s');
       return 'Login failed, Please try again.';
     }
   }
@@ -167,7 +167,7 @@ class FireStoreUtils {
         return 'Couldn\'t sign up for firebase, Please try again.';
       }
     } on auth.FirebaseAuthException catch (error) {
-      print(error.toString() + '${error.stackTrace}');
+      //print(error.toString() + '${error.stackTrace}');
       String message = 'Couldn\'t sign up';
       switch (error.code) {
         case 'email-already-in-use':

@@ -15,7 +15,7 @@ class UserConst {
 
   static void logout() async {
     await FirebaseAuth.instance.signOut();
-    Get.offAll(()=>{DashboardPage()});
+    Get.offAll(() => DashboardPage());
     /*
     Navigator.pushAndRemoveUntil(
       context,
@@ -119,15 +119,15 @@ class ThemeConst {
 class ChatConst {
   static getRoom(UserClass user, [Map<String, dynamic>? metadata]) {}
 
-  static Future<DocumentSnapshot<Map<String, dynamic>>> getOtherRoomUsers(
-      types.Room room) async {
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getOtherRoomUsers (
+      types.Room room) async* {
     var otherUser;
 
     if (room.type == types.RoomType.direct ||
         room.type == types.RoomType.group) {
       try {
         otherUser = room.users.firstWhere(
-              (u) => u.id != UserConst.currentUser!.uid,
+              (u) => u.id != FirebaseAuth.instance.currentUser!.uid,
         );
       } catch (e) {
         otherUser = null;
@@ -141,8 +141,33 @@ class ChatConst {
         .doc(otherUser.id)
         .get();
 
-    return response;
+    yield response;
   }
+
+  // static Future<DocumentSnapshot<Map<String, dynamic>>> getOtherRoomUsers(
+  //     types.Room room) async {
+  //   var otherUser;
+  //
+  //   if (room.type == types.RoomType.direct ||
+  //       room.type == types.RoomType.group) {
+  //     try {
+  //       otherUser = room.users.firstWhere(
+  //             (u) => u.id != FirebaseAuth.instance.currentUser!.uid,
+  //       );
+  //     } catch (e) {
+  //       otherUser = null;
+  //       // Do nothing if other user is not found
+  //     }
+  //   }
+  //
+  //   DocumentSnapshot<Map<String, dynamic>> response = await FirebaseFirestore
+  //       .instance
+  //       .collection("users")
+  //       .doc(otherUser.id)
+  //       .get();
+  //
+  //   return response;
+  // }
 
   static Future<types.Room> createSingleUserRoom(types.User otherUser) async {
     final room = await FirebaseChatCore.instance

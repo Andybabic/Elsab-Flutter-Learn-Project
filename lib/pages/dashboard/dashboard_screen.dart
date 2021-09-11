@@ -1,5 +1,6 @@
 import 'package:elsab/constants/app_constants.dart';
 import 'package:elsab/pages/chat/rooms_overview_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,12 +9,15 @@ import 'package:elsab/pages/alerts/alerts_screen.dart';
 import 'package:elsab/pages/home/home_screen.dart';
 import '../../controller/dashboard_controller.dart';
 import 'package:elsab/components/menu.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatelessWidget{
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(
       builder: (controller) {
+
         return Scaffold(
           //backgroundColor: ThemeConst.primarydark,
           appBar: AppBar(
@@ -47,6 +51,7 @@ class DashboardPage extends StatelessWidget {
             selectedItemColor: ThemeConst.accent,
             onTap: controller.changeTabIndex,
             currentIndex: controller.tabIndex,
+            // needed for bugfixing
             unselectedFontSize: 0.0,
             showSelectedLabels: false,
             showUnselectedLabels: false,

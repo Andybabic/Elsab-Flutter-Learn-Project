@@ -1,5 +1,6 @@
 //import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
@@ -13,8 +14,8 @@ import 'package:get_storage/get_storage.dart';
 Drawer menu(BuildContext context) {
 
   final box = GetStorage();
-  return Drawer(
 
+  return Drawer(
     // Add a ListView to the drawer. This ensures the user can scroll
     // through the options in the drawer if there isn't enough vertical
     // space to fit everything.

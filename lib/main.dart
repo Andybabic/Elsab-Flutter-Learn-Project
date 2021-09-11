@@ -10,6 +10,7 @@ import 'constants/app_constants.dart';
 import 'components/AppStatus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

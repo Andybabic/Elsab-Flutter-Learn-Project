@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../controller/einsatz_controller.dart';
 import 'einsatz_details_screen.dart';
 import '../../widgets/einsatz_item.dart';
-import 'dart:async';
 
 class EinsatzlisteScreen extends StatelessWidget {
   final EinsatzController einsatz = Get.put(EinsatzController());
@@ -22,7 +21,6 @@ class EinsatzlisteScreen extends StatelessWidget {
               Expanded(
                 child: GetX<EinsatzController>(
                   builder: (controller) {
-                    Timer(Duration(seconds: 5), () {});
                     return Container(
                       padding: EdgeInsets.all(4.0),
                       child: ListView(
