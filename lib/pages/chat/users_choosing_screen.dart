@@ -41,9 +41,7 @@ class _UsersPageState extends State<UsersPage> {
               actions: <Widget>[
                 new TextButton(
                   child: new Text('Abbrechen'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: () => Get.back(),
                 ),
                 new TextButton(
                   child: new Text('Erstellen'),
@@ -97,7 +95,7 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  void cancelGroup() {
+  void flipChoosingState() {
     setState(() {
       _isChoosing = !_isChoosing;
       chosenUsers = [];
@@ -121,7 +119,7 @@ class _UsersPageState extends State<UsersPage> {
                         fontSize: 13,
                         letterSpacing: 1.5,
                       )),
-                  onPressed: () => cancelGroup()),
+                  onPressed: () => flipChoosingState()),
             ),
           )
         ],
@@ -181,9 +179,7 @@ class _UsersPageState extends State<UsersPage> {
                       final user = snapshot.data![index];
 
                       return GestureDetector(
-                        onLongPress: () => {
-                          setState(() => {_isChoosing = true})
-                        },
+                        onLongPress: () => flipChoosingState(),
                         onTap: () {
                           if (!_isChoosing) {
                             _handlePressed([user], context, false);
