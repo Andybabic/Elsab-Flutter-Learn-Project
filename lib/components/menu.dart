@@ -41,7 +41,7 @@ Drawer menu(BuildContext context) {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                 Text((box.read('firstName')??'User') + " " + (box.read('lastName')??'Name')),
+                  Text((box.read('firstName')??'User') + " " + (box.read('lastName')??'Name')),
                   Text(box.read('email')??'email'),
                 ],
               ),
