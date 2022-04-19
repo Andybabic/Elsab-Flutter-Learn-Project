@@ -239,27 +239,29 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  void handleDeleteRoom() async {
+    ChatConst.deleteRoom(widget.room.id);
+    setState(() {
+      _refreshAllowed = false;
+    });
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => RoomsScreen()),
+          (route) => false,
+    );
+  }
+
   showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
       child: Text("Abbrechen"),
       onPressed: () {
-        Navigator.of(context).pop();
+        Get.back();
       },
     );
     Widget continueButton = TextButton(
       child: Text("Fortfahren"),
-      onPressed: () {
-        ChatConst.deleteRoom(widget.room.id);
-        setState(() {
-          _refreshAllowed = false;
-        });
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => RoomsScreen()),
-              (route) => false,
-        );
-      },
+      onPressed: () => handleDeleteRoom()
     );
 
     // set up the AlertDialog
